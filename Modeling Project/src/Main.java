@@ -164,74 +164,25 @@ public class Main {
 		serviceTimeRandomFrame.add(serviceTimeRandomTable.table);
 		serviceTimeRandomFrame.setVisible(true);
 
-		SimulationTableRecord[] record = new SimulationTableRecord[numberOfCustomers];
-		record[0] = new SimulationTableRecord();
-		record[0].customerNumber = 1;
-		record[0].interArrivalTime = 0;
-		record[0].arrivalTime = 0;
-		record[0].serviceTime = Integer.parseInt(serviceTimeRandomTable.getCell(0, 2));
-		record[0].timeServiceBegins = 0;
-		record[0].waitingTimeInQueue = 0;
-		record[0].timeServiceEnds = record[0].serviceTime;
-		record[0].timeSpentInSystem = record[0].serviceTime;
-		record[0].serverIdleTime = 0;
-		Queue<SimulationTableRecord> queue= new LinkedList<SimulationTableRecord>();
-		int customerInQueue = 1;
-		int customerInBank = 1;
-		queue.add(record[0]);
-		for (int i = 1; i < numberOfCustomers; i++) {
-			record[i] = new SimulationTableRecord();
-			record[i].customerNumber = i + 1;
-			record[i].interArrivalTime = Integer.parseInt(interArrivalRandomTable.getCell(i, 2));
+		ArrayList<SimulationTableRecord> record1 = new ArrayList<SimulationTableRecord>();
+		ArrayList<SimulationTableRecord> record2 = new ArrayList<SimulationTableRecord>();
+		int sr = Integer.parseInt(serviceTimeRandomTable.getCell(0, 2));
+		record1.add(new SimulationTableRecord(1, 0, 0, sr, 0, 0, 0, 0, 0));
 
-			record[i].serviceTime = Integer.parseInt(serviceTimeRandomTable.getCell(i, 2));
-			record[i].arrivalTime = record[i].interArrivalTime + record[i - 1].arrivalTime;
 
-			int x = record[i].arrivalTime;
-			int y = record[customerInQueue - 1].timeServiceEnds;
+		for (int i = 1, j = 1; i < numberOfCustomers;) {
+			SimulationTableRecord record=new SimulationTableRecord();
+			record.customerNumber = i + 1;
+			record.interArrivalTime = Integer.parseInt(interArrivalRandomTable.getCell(i, 2));
 
-			if(!queue.isEmpty())
-			if(queue.peek().timeServiceEnds<=record[i].arrivalTime)
-			{
-				queue.remove();
-			}
-			if (queue.size()<2) {
-
-				if (record[customerInQueue - 1].timeServiceEnds >= record[i].arrivalTime) {
-					record[i].timeServiceBegins = record[customerInQueue - 1].timeServiceEnds;
-					record[i].serverIdleTime = 0;
-					queue.add(record[i]);
-					
-				} else {
-					record[i].timeServiceBegins = record[i].arrivalTime;
-					record[i].serverIdleTime = record[i].arrivalTime 
-							- record[customerInQueue - 1].timeServiceEnds;
-					queue.remove();
-				}
-				customerInQueue = i;
-				record[i].timeServiceEnds = record[i].serviceTime + record[i].timeServiceBegins;
-			} 
-			else {
-
-				System.out.println("Customer #" + record[i].customerNumber + " is in the bank");
-				if (record[customerInBank - 1].timeServiceEnds >= record[i].arrivalTime) {
-					record[i].timeServiceBegins = record[customerInBank - 1].timeServiceEnds;
-					record[i].serverIdleTime = record[i].arrivalTime - record[customerInBank - 1].timeServiceEnds;
-				} else {
-					record[i].timeServiceBegins = record[i].arrivalTime;
-					record[i].serverIdleTime = 0;
-				}
-				record[i].timeServiceEnds = record[i].serviceTime + record[i].timeServiceBegins;
-			
-			}
-			customerInBank++;
-			record[i].waitingTimeInQueue = record[i].timeServiceBegins - record[i].arrivalTime;
-			record[i].timeSpentInSystem = record[i].serviceTime + record[i].waitingTimeInQueue;
+			record.serviceTime = Integer.parseInt(serviceTimeRandomTable.getCell(i, 2));
+			record.arrivalTime = record.interArrivalTime + record1.get(i-1).arrivalTime;
 
 		}
 		JFrame simulationFrame = new JFrame();
 		simulationFrame.setSize(1000, 500);
-		Table sim = SimulationTableRecord.getTableRepresentation(numberOfCustomers, record);
+		SimulationTableRecord [] r=(SimulationTableRecord[]) record1.toArray();
+		Table sim = SimulationTableRecord.getTableRepresentation(record1.toArray().length, r);
 		String headers3[] = { "Customer", "Inter-Arrival Time", "Arrival Time", "Service Time", "Service Begins",
 				"Waiting", "Service ends", "Time Spent", "Idle" };
 		sim.setTitles(headers3);
