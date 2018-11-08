@@ -167,6 +167,42 @@ public class SimulationTableRecord {
 		
 		return simulation;
 	}
-
+	//Returns a table of required answers
+	public static Table getAnswers(ArrayList<SimulationTableRecord> driveIn,
+			ArrayList<SimulationTableRecord> inBank
+			)
+	{
+		Table answers= new Table(1, 5);
+		double averageServiceTime=0;
+		double averageWaitingTime=0;
+		for(int i=0;i<driveIn.size();i++)
+		{
+			averageServiceTime+=driveIn.get(i).serviceTime;
+			averageWaitingTime+=driveIn.get(i).waitingTimeInQueue;
+		}
+		answers.setValue(0, 0, ""+averageServiceTime/driveIn.size());
+		answers.setValue(0, 1, ""+averageWaitingTime/driveIn.size());
+		
+		averageServiceTime=0;
+		averageWaitingTime=0;
+		for(int i=0;i<inBank.size();i++)
+		{
+			averageServiceTime+=inBank.get(i).serviceTime;
+			averageWaitingTime+=inBank.get(i).waitingTimeInQueue;
+		}
+		double count=0;
+		for(int i=0;i<inBank.size();i++)
+		{
+			if(inBank.get(i).waitingTimeInQueue>0)
+			{
+				count++;
+			}
+		}
+		//The first inBank record is a dummy.
+		answers.setValue(0, 2, ""+averageServiceTime/(inBank.size()-1));
+		answers.setValue(0, 3, ""+averageWaitingTime/(inBank.size()-1));
+		answers.setValue(0, 4, ""+count/(inBank.size()-1));
+		return answers;
+	}
 
 }

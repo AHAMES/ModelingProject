@@ -192,7 +192,7 @@ public class Main {
 				carQueue.removeFirst();
 			}
 
-			if (carQueue.size() < 3) {
+			if (carQueue.size() < 2) {
 				record.setCustomerNumber(k + 1);
 				record.setInterArrivalTime(interArrivalTime);
 				record.setServiceTime(Integer.parseInt(serviceTimeRandomTable.getCell(k, 2)));
@@ -239,25 +239,29 @@ public class Main {
 			recordTotal.add(record);
 		}
 		//Table for the drive in Teller
-		Table sim = SimulationTableRecord.getTableRepresentation(record1.toArray().length, record1);
+		Table driveInSim = SimulationTableRecord.getTableRepresentation(record1.toArray().length, record1);
 		String headers3[] = { "Customer", "Inter-Arrival Time", "Arrival Time", "Service Time", "Service Begins",
 				"Waiting", "Service ends", "Time Spent", "Idle" };
-		sim.setTitles(headers3);
+		driveInSim.setTitles(headers3);
 		
 		//Table for the in bank teller
-		Table sim2 = SimulationTableRecord.getTableRepresentation(record2.toArray().length, record2);
-		sim2.setTitles(headers3);
+		Table inBankSim = SimulationTableRecord.getTableRepresentation(record2.toArray().length, record2);
+		inBankSim.setTitles(headers3);
 		
 		
 		//Combined Table of tellers
-		Table sim3 = SimulationTableRecord.getTableRepresentation(recordTotal.toArray().length, recordTotal);
-		sim3.setTitles(headers3);
+		Table totalSim = SimulationTableRecord.getTableRepresentation(recordTotal.toArray().length, recordTotal);
+		totalSim.setTitles(headers3);
 		
-
+		Table answers= SimulationTableRecord.getAnswers(record1, record2);
+		String answersHeaders[] = {"Drive In Avg Service","Drive In Avg Waiting",
+				"In Bank Avg Service","In Bank  Avg Waiting","probability Customer Waits"};
+		answers.setTitles(answersHeaders);
 		JTabbedPane panel=new JTabbedPane();
-		panel.addTab("Drive In", new JScrollPane(sim.table));
-		panel.addTab("In Bank", new JScrollPane(sim2.table));
-		panel.addTab("Combined", new JScrollPane(sim3.table));
+		panel.addTab("Drive In", new JScrollPane(driveInSim.table));
+		panel.addTab("In Bank", new JScrollPane(inBankSim.table));
+		panel.addTab("Combined", new JScrollPane(totalSim.table));
+		panel.addTab("Answers", new JScrollPane(answers.table));
 		JFrame result =new JFrame("Results");
 		result.setSize(1000, 500);
 		result.add(panel);
