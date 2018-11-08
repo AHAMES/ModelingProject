@@ -6,6 +6,7 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 
 public class Main {
 
@@ -191,7 +192,7 @@ public class Main {
 				carQueue.removeFirst();
 			}
 
-			if (carQueue.size() < 2) {
+			if (carQueue.size() < 3) {
 				record.customerNumber = k + 1;
 				record.interArrivalTime = interArrivalTime;
 				record.serviceTime = Integer.parseInt(serviceTimeRandomTable.getCell(k, 2));
@@ -238,33 +239,29 @@ public class Main {
 			recordTotal.add(record);
 		}
 		//Table for the drive in Teller
-		JFrame simulationFrame = new JFrame("Drive In Teller");
-		simulationFrame.setSize(1000, 500);
 		Table sim = SimulationTableRecord.getTableRepresentation(record1.toArray().length, record1);
 		String headers3[] = { "Customer", "Inter-Arrival Time", "Arrival Time", "Service Time", "Service Begins",
 				"Waiting", "Service ends", "Time Spent", "Idle" };
 		sim.setTitles(headers3);
-		simulationFrame.add(new JScrollPane(sim.table));
-		simulationFrame.setVisible(true);
-
+		
 		//Table for the in bank teller
-		JFrame simulationFrame2 = new JFrame("In Bank Teller");
-		simulationFrame2.setSize(1000, 500);
 		Table sim2 = SimulationTableRecord.getTableRepresentation(record2.toArray().length, record2);
 		sim2.setTitles(headers3);
-		simulationFrame2.add(new JScrollPane(sim2.table));
-		simulationFrame2.setVisible(true);
-
+		
 		
 		//Combined Table of tellers
-		JFrame simulationFrame3 = new JFrame("All Records");
-		simulationFrame3.setSize(1000, 500);
 		Table sim3 = SimulationTableRecord.getTableRepresentation(recordTotal.toArray().length, recordTotal);
 		sim3.setTitles(headers3);
-		simulationFrame3.add(new JScrollPane(sim3.table));
-		simulationFrame3.setVisible(true);
-
 		
+
+		JTabbedPane panel=new JTabbedPane();
+		panel.addTab("Drive In", new JScrollPane(sim.table));
+		panel.addTab("In Bank", new JScrollPane(sim2.table));
+		panel.addTab("Combined", new JScrollPane(sim3.table));
+		JFrame result =new JFrame("Results");
+		result.setSize(1000, 500);
+		result.add(panel);
+		result.setVisible(true);
 	}
 
 }
