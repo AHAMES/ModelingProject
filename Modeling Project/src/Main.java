@@ -152,7 +152,7 @@ public class Main {
 		 * randomInterArrivalFrame.setVisible(true);
 		 */
 
-		int numberOfCustomers = 10;
+		int numberOfCustomers = 20;
 		Table serviceTimeRandomTable = new Table(numberOfCustomers, 3);
 
 		for (int i = 0; i < numberOfCustomers; i++) {
@@ -172,16 +172,18 @@ public class Main {
 
 		ArrayList<SimulationTableRecord> record1 = new ArrayList<SimulationTableRecord>();
 		ArrayList<SimulationTableRecord> record2 = new ArrayList<SimulationTableRecord>();
+		ArrayList<SimulationTableRecord> recordTotal = new ArrayList<SimulationTableRecord>();
 		int sr = Integer.parseInt(serviceTimeRandomTable.getCell(0, 2));
 		record1.add(new SimulationTableRecord(1, 0, 0, sr, 0, 0, sr, 0, 0));
 		record2.add(new SimulationTableRecord(0, 0, 0, 0, 0, 0, 0, 0, 0));
+		recordTotal.add(record1.get(0));
 		int nextAvailableTime = sr;
 		LinkedList<Integer> carQueue = new LinkedList<Integer>();
 		carQueue.add(1);
 		int arrivalTime = 0;
 		for (int i = 1, j = 1, k = 1; k < numberOfCustomers; k++) {
 
-			int whichQueue = random.nextInt(1);
+			
 			SimulationTableRecord record = new SimulationTableRecord();
 			int interArrivalTime = Integer.parseInt(interArrivalRandomTable.getCell(k, 2));
 			int CurrentArrivalTime = arrivalTime + interArrivalTime;
@@ -233,8 +235,9 @@ public class Main {
 				record2.add(record);
 				j++;
 			}
-
+			recordTotal.add(record);
 		}
+		//Table for the drive in Teller
 		JFrame simulationFrame = new JFrame("Drive In Teller");
 		simulationFrame.setSize(1000, 500);
 		Table sim = SimulationTableRecord.getTableRepresentation(record1.toArray().length, record1);
@@ -244,14 +247,24 @@ public class Main {
 		simulationFrame.add(new JScrollPane(sim.table));
 		simulationFrame.setVisible(true);
 
+		//Table for the in bank teller
 		JFrame simulationFrame2 = new JFrame("In Bank Teller");
 		simulationFrame2.setSize(1000, 500);
 		Table sim2 = SimulationTableRecord.getTableRepresentation(record2.toArray().length, record2);
-
 		sim2.setTitles(headers3);
 		simulationFrame2.add(new JScrollPane(sim2.table));
 		simulationFrame2.setVisible(true);
 
+		
+		//Combined Table of tellers
+		JFrame simulationFrame3 = new JFrame("All Records");
+		simulationFrame3.setSize(1000, 500);
+		Table sim3 = SimulationTableRecord.getTableRepresentation(recordTotal.toArray().length, recordTotal);
+		sim3.setTitles(headers3);
+		simulationFrame3.add(new JScrollPane(sim3.table));
+		simulationFrame3.setVisible(true);
+
+		
 	}
 
 }
