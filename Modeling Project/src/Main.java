@@ -77,10 +77,10 @@ public class Main {
 		}
 
 		// Showing the result in a JFrame
-		JFrame interArrivalFrame = new JFrame();
+		/*JFrame interArrivalFrame = new JFrame();
 		interArrivalFrame.setSize(500, 500);
 		interArrivalFrame.add(interArrivalTable.table);
-		interArrivalFrame.setVisible(true);
+		interArrivalFrame.setVisible(true);*/
 
 		//////////////////////////////////////////////////////
 
@@ -123,10 +123,10 @@ public class Main {
 
 		}
 		// Showing the result in a JFrame
-		JFrame serviceTimeFrame = new JFrame();
+		/*Frame serviceTimeFrame = new JFrame();
 		serviceTimeFrame.setSize(500, 500);
 		serviceTimeFrame.add(serviceTimeTable.table);
-		serviceTimeFrame.setVisible(true);
+		serviceTimeFrame.setVisible(true);*/
 		//////////////////////////////////////////////////////
 
 		Table interArrivalRandomTable = new Table(20, 3);
@@ -143,10 +143,10 @@ public class Main {
 			interArrivalRandomTable.setValue(i, 2, randomValue + "");
 		}
 
-		JFrame randomInterArrivalFrame = new JFrame();
+		/*JFrame randomInterArrivalFrame = new JFrame();
 		randomInterArrivalFrame.setSize(500, 500);
 		randomInterArrivalFrame.add(interArrivalRandomTable.table);
-		randomInterArrivalFrame.setVisible(true);
+		randomInterArrivalFrame.setVisible(true);*/
 
 		int numberOfCustomers = 10;
 		Table serviceTimeRandomTable = new Table(numberOfCustomers, 3);
@@ -159,25 +159,36 @@ public class Main {
 			serviceTimeRandomTable.setValue(i, 2, randomValue + "");
 		}
 
-		JFrame serviceTimeRandomFrame = new JFrame();
+		/*JFrame serviceTimeRandomFrame = new JFrame();
 		serviceTimeRandomFrame.setSize(500, 500);
 		serviceTimeRandomFrame.add(serviceTimeRandomTable.table);
-		serviceTimeRandomFrame.setVisible(true);
+		serviceTimeRandomFrame.setVisible(true);*/
 
 		ArrayList<SimulationTableRecord> record1 = new ArrayList<SimulationTableRecord>();
 		ArrayList<SimulationTableRecord> record2 = new ArrayList<SimulationTableRecord>();
 		int sr = Integer.parseInt(serviceTimeRandomTable.getCell(0, 2));
-		record1.add(new SimulationTableRecord(1, 0, 0, sr, 0, 0, 0, 0, 0));
-
-
+		record1.add(new SimulationTableRecord(1, 0, 0, sr, 0, 0,sr, 0, 0));
+		int nextAvailableTime=sr;
+		LinkedList<Integer> carQueue=new LinkedList<Integer>();
+		carQueue.add(1);
+		int arrivalTime=0;
 		for (int i = 1, j = 1; i < numberOfCustomers;) {
+			
+			int whichQueue=random.nextInt((2-1)+1)+1;
 			SimulationTableRecord record=new SimulationTableRecord();
-			record.customerNumber = i + 1;
-			record.interArrivalTime = Integer.parseInt(interArrivalRandomTable.getCell(i, 2));
-
-			record.serviceTime = Integer.parseInt(serviceTimeRandomTable.getCell(i, 2));
-			record.arrivalTime = record.interArrivalTime + record1.get(i-1).arrivalTime;
-
+			int interArrivalTime=Integer.parseInt(interArrivalRandomTable.getCell(i, 2));
+			int CurrentArrivalTime=arrivalTime+interArrivalTime;
+			if(nextAvailableTime<=CurrentArrivalTime)
+			{
+				carQueue.removeFirst();
+			}
+			if(whichQueue==1)
+			{
+				record.customerNumber = i + 1;
+				record.interArrivalTime = interArrivalTime;
+				record.serviceTime = Integer.parseInt(serviceTimeRandomTable.getCell(i, 2));
+				record.arrivalTime = record.interArrivalTime + record1.get(i-1).arrivalTime;
+			}
 		}
 		JFrame simulationFrame = new JFrame();
 		simulationFrame.setSize(1000, 500);
