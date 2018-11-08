@@ -193,45 +193,45 @@ public class Main {
 			}
 
 			if (carQueue.size() < 3) {
-				record.customerNumber = k + 1;
-				record.interArrivalTime = interArrivalTime;
-				record.serviceTime = Integer.parseInt(serviceTimeRandomTable.getCell(k, 2));
-				record.arrivalTime = CurrentArrivalTime;
-				arrivalTime = record.arrivalTime;
+				record.setCustomerNumber(k + 1);
+				record.setInterArrivalTime(interArrivalTime);
+				record.setServiceTime(Integer.parseInt(serviceTimeRandomTable.getCell(k, 2)));
+				record.setArrivalTime(CurrentArrivalTime);
+				arrivalTime = record.getArrivalTime();
 				// time Service begins condition, if not busy start at once
-				if (record1.get(i - 1).timeServiceEnds <= record.arrivalTime) {
-					record.timeServiceBegins = record.arrivalTime;
-					record.serverIdleTime = record.arrivalTime - record1.get(i - 1).timeServiceEnds;
+				if (record1.get(i - 1).getTimeServiceEnds()<= record.getArrivalTime()) {
+					record.setTimeServiceBegins(record.getArrivalTime());
+					record.setServerIdleTime(record.getArrivalTime() - record1.get(i - 1).getTimeServiceEnds());
 				} else {
-					record.timeServiceBegins = record1.get(i - 1).timeServiceEnds;
-					record.serverIdleTime = 0;
+					record.setTimeServiceBegins(record1.get(i - 1).getTimeServiceEnds());
+					record.setServerIdleTime(0);
 				}
-				record.waitingTimeInQueue = record.timeServiceBegins - record.arrivalTime;
-				record.timeServiceEnds = record.timeServiceBegins + record.serviceTime;
-				record.timeSpentInSystem = record.timeServiceEnds - record.arrivalTime;
-				nextAvailableTime = record.timeServiceEnds;
+				record.setWaitingTimeInQueue(record.getTimeServiceBegins()- record.getArrivalTime());
+				record.setTimeServiceEnds(record.getTimeServiceBegins()+ record.getServiceTime());
+				record.setTimeSpentInSystem(record.getTimeServiceEnds()- record.getArrivalTime());
+				nextAvailableTime = record.getTimeServiceEnds();
 				record1.add(record);
-				carQueue.add(record.customerNumber);
+				carQueue.add(record.getCustomerNumber());
 				i++;
 			} else {
 				// Same code as the second else, i made it like that for the lack of proper goto
 				// operator in java
-				record.customerNumber = k + 1;
-				record.interArrivalTime = interArrivalTime;
-				record.serviceTime = Integer.parseInt(serviceTimeRandomTable.getCell(k, 2));
-				record.arrivalTime = CurrentArrivalTime;
-				arrivalTime = record.arrivalTime;
+				record.setCustomerNumber(k + 1);
+				record.setInterArrivalTime(interArrivalTime);
+				record.setServiceTime(Integer.parseInt(serviceTimeRandomTable.getCell(k, 2)));
+				record.setArrivalTime(CurrentArrivalTime);
+				arrivalTime = record.getArrivalTime();
 				// time Service begins condition, if not busy start at once
-				if (record2.get(j - 1).timeServiceEnds <= record.arrivalTime) {
-					record.timeServiceBegins = record.arrivalTime;
-					record.serverIdleTime = record.arrivalTime - record2.get(j - 1).timeServiceEnds;
+				if (record2.get(j - 1).getTimeServiceEnds()<= record.getArrivalTime()) {
+					record.setTimeServiceBegins(record.getArrivalTime());
+					record.setServerIdleTime(record.getArrivalTime() - record2.get(j - 1).getTimeServiceEnds());
 				} else {
-					record.timeServiceBegins = record2.get(j - 1).timeServiceEnds;
-					record.serverIdleTime = 0;
+					record.setTimeServiceBegins(record2.get(j - 1).getTimeServiceEnds());
+					record.setServerIdleTime(0);
 				}
-				record.waitingTimeInQueue = record.timeServiceBegins - record.arrivalTime;
-				record.timeServiceEnds = record.timeServiceBegins + record.serviceTime;
-				record.timeSpentInSystem = record.timeServiceEnds - record.arrivalTime;
+				record.setWaitingTimeInQueue(record.getTimeServiceBegins()- record.getArrivalTime());
+				record.setTimeServiceEnds(record.getTimeServiceBegins()+ record.getServiceTime());
+				record.setTimeSpentInSystem(record.getTimeServiceEnds()- record.getArrivalTime());
 
 				record2.add(record);
 				j++;

@@ -2,15 +2,105 @@ import java.util.ArrayList;
 
 public class SimulationTableRecord {
 
-	int customerNumber;
-	int interArrivalTime;
-	int arrivalTime;
-	int serviceTime;
-	int timeServiceBegins;
-	int waitingTimeInQueue;
-	int timeServiceEnds;
-	int timeSpentInSystem;
-	int serverIdleTime;
+	private int customerNumber;
+	private int interArrivalTime;
+	private int arrivalTime;
+	private int serviceTime;
+	private int timeServiceBegins;
+	private int waitingTimeInQueue;
+	private int timeServiceEnds;
+	private int timeSpentInSystem;
+	private int serverIdleTime;
+	//////////////////////////
+	///getters
+	/////////////////////////
+	public int getCustomerNumber()
+	{
+		return customerNumber;
+	}
+	public int getInterArrivalTime()
+	{
+		return interArrivalTime;
+	}
+	public int getArrivalTime()
+	{
+		return arrivalTime;
+	}
+	public int getServiceTime()
+	{
+		return serviceTime;
+	}
+	public int getTimeServiceBegins()
+	{
+		return timeServiceBegins;
+	}
+	
+	public int getWaitingTimeInQueue()
+	{
+		return waitingTimeInQueue;
+	}
+	
+	public int getTimeServiceEnds()
+	{
+		return timeServiceEnds;
+	}
+	
+	public int getServerIdleTime()
+	{
+		return serverIdleTime;
+	}
+	
+	public int getTimeSpentInSystem()
+	{
+		return timeSpentInSystem;
+	}
+	//////////////////////////
+	///setters
+	/////////////////////////
+	public void setCustomerNumber(int cn)
+	{
+		customerNumber=cn;
+	}
+	public void setInterArrivalTime(int IAT)
+	{
+		interArrivalTime=IAT;
+	}
+	public void setArrivalTime(int AT)
+	{
+		arrivalTime=AT;
+	}
+	public void setServiceTime(int AT)
+	{
+		serviceTime=AT;
+	}
+	public void setTimeServiceBegins(int AT)
+	{
+		timeServiceBegins=AT;
+	}
+	
+	public void setWaitingTimeInQueue(int AT)
+	{
+		waitingTimeInQueue=AT;
+	}
+	
+	public void setTimeServiceEnds(int AT)
+	{
+		timeServiceEnds=AT;
+	}
+	
+	public void setServerIdleTime(int AT)
+	{
+		serverIdleTime=AT;
+	}
+	
+	public void setTimeSpentInSystem(int AT)
+	{
+		timeSpentInSystem=AT;
+	}
+	
+	//////////////////////////
+	///Constructor
+	/////////////////////////
 	public SimulationTableRecord()
 	{
 		
@@ -30,7 +120,9 @@ public class SimulationTableRecord {
 		timeSpentInSystem=TSS;
 		serverIdleTime=SIT;
 	}
-	
+
+	//Creates and returns a table to for the records
+	//Uses normal array
 	public static Table getTableRepresentation(int numberOfCustomers,
 			SimulationTableRecord records[])
 	{
@@ -52,6 +144,9 @@ public class SimulationTableRecord {
 		return simulation;
 	}
 	
+	
+	//Creates and returns a table to for the records
+	//Uses array list
 	public static Table getTableRepresentation(int numberOfCustomers,
 			ArrayList<SimulationTableRecord> records)
 	{
