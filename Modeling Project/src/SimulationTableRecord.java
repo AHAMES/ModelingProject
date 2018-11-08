@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 
 public class SimulationTableRecord {
 
@@ -50,5 +51,27 @@ public class SimulationTableRecord {
 		
 		return simulation;
 	}
+	
+	public static Table getTableRepresentation(int numberOfCustomers,
+			ArrayList<SimulationTableRecord> records)
+	{
+		Table simulation = new Table(numberOfCustomers, 9);
+		for(int i=0;i<records.size();i++)
+		{
+			simulation.setValue(i, 0, ""+records.get(i).customerNumber);
+			simulation.setValue(i, 1, ""+records.get(i).interArrivalTime);
+			simulation.setValue(i, 2, ""+records.get(i).arrivalTime);
+			simulation.setValue(i, 3, ""+records.get(i).serviceTime);
+			simulation.setValue(i, 4, ""+records.get(i).timeServiceBegins);
+			simulation.setValue(i, 5, ""+records.get(i).waitingTimeInQueue);
+			simulation.setValue(i, 6, ""+records.get(i).timeServiceEnds);
+			simulation.setValue(i, 7, ""+records.get(i).timeSpentInSystem);
+			simulation.setValue(i, 8, ""+records.get(i).serverIdleTime);
+		}
+		
+		
+		return simulation;
+	}
+
 
 }
