@@ -75,10 +75,10 @@ public class Main {
 		}
 
 		// Showing the result in a JFrame
-		/*
-		 * JFrame interArrivalFrame = new JFrame(); interArrivalFrame.setSize(500, 500);
-		 * interArrivalFrame.add(interArrivalTable.table);
-		 * interArrivalFrame.setVisible(true);
+		
+		 /*JFrame interArrivalFrame = new JFrame(); interArrivalFrame.setSize(500, 500);
+		 interArrivalFrame.add(interArrivalTable.table);
+		 interArrivalFrame.setVisible(true);
 		 */
 
 		//////////////////////////////////////////////////////
@@ -129,6 +129,10 @@ public class Main {
 		 */
 		//////////////////////////////////////////////////////
 
+		//////////////////////////////////////////////////////
+		///Random values in the table
+		//////////////////////////////////////////////////////
+		
 		Table interArrivalRandomTable = new Table(20, 3);
 		Random random = new Random();
 		interArrivalRandomTable.setValue(0, 0, 1 + "");
