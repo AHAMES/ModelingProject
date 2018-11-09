@@ -1,9 +1,6 @@
-import java.awt.ScrollPane;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Random;
-
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -15,26 +12,26 @@ public class Main {
 		// If float problem happens
 
 		// Initializing given probability tables
-		float[] interArrivalTimeProbabilityList = new float[6];
-		float[] serviceTimeProbabilityList = new float[4];
+		double[] interArrivalTimeProbabilityList = new double[6];
+		double[] serviceTimeProbabilityList = new double[4];
 
-		// Initializing the inter-arrival time table
-		interArrivalTimeProbabilityList[0] = (float) 0.09;
-		interArrivalTimeProbabilityList[1] = (float) 0.17;
-		interArrivalTimeProbabilityList[2] = (float) 0.27;
-		interArrivalTimeProbabilityList[3] = (float) 0.20;
-		interArrivalTimeProbabilityList[4] = (float) 0.15;
-		interArrivalTimeProbabilityList[5] = (float) 0.12;
+		// Initializing the inter arrival time table
+		interArrivalTimeProbabilityList[0] = 0.09;
+		interArrivalTimeProbabilityList[1] = 0.17;
+		interArrivalTimeProbabilityList[2] = 0.27;
+		interArrivalTimeProbabilityList[3] = 0.20;
+		interArrivalTimeProbabilityList[4] = 0.15;
+		interArrivalTimeProbabilityList[5] = 0.12;
 
 		// Initializing the service time table
-		serviceTimeProbabilityList[0] = (float) 0.20;
-		serviceTimeProbabilityList[1] = (float) 0.40;
-		serviceTimeProbabilityList[2] = (float) 0.28;
-		serviceTimeProbabilityList[3] = (float) 0.12;
+		serviceTimeProbabilityList[0] = 0.20;
+		serviceTimeProbabilityList[1] = 0.40;
+		serviceTimeProbabilityList[2] = 0.28;
+		serviceTimeProbabilityList[3] = 0.12;
 
 		// Cumulative probability used in the tables
-		float cumulativeInterArrivalProbability = (float) 0.001;
-		float cumulativeServiceTimeProbability = (float) 0.001;
+		double cumulativeInterArrivalProbability = 0.001;
+		double cumulativeServiceTimeProbability = 0.001;
 
 		// probability table length
 		int length1 = interArrivalTimeProbabilityList.length;
@@ -139,7 +136,7 @@ public class Main {
 		interArrivalRandomTable.setValue(0, 2, "-");
 
 		for (int i = 1; i < 20; i++) {
-			float n = (float) (0.001 + random.nextFloat() * (1 - 0.001));
+			double n = (0.001 + random.nextDouble() * (1 - 0.001));
 			int randomValue = Range.getRangeProbability(interArrivalRange, n);
 			interArrivalRandomTable.setValue(i, 0, i + 1 + "");
 			interArrivalRandomTable.setValue(i, 1, n + "");
@@ -157,7 +154,7 @@ public class Main {
 		Table serviceTimeRandomTable = new Table(numberOfCustomers, 3);
 
 		for (int i = 0; i < numberOfCustomers; i++) {
-			float n = (float) (0.001 + random.nextFloat() * (1 - 0.001));
+			double n = (0.001 + random.nextDouble() * (1 - 0.001));
 			int randomValue = Range.getRangeProbability(serviceTimeRange, n) + 1;
 			serviceTimeRandomTable.setValue(i, 0, i + 1 + "");
 			serviceTimeRandomTable.setValue(i, 1, n + "");
