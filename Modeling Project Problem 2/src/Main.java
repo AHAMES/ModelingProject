@@ -179,56 +179,96 @@ public class Main {
 		ArrayList<SimulationTableRecord> record1 = new ArrayList<SimulationTableRecord>();
 		int firstDemand = Integer.parseInt(demandRandomTable.getCell(0, 2));
 		SimulationTableRecord record = new SimulationTableRecord(1, 1, carsInStorage, firstDemand,
-				carsInStorage - firstDemand, 0, orderSize, daysToNextOrder - 1);
+				carsInStorage - firstDemand, 0, orderSize, daysToNextOrder);
 		record1.add(record);
 		
+		//This queue of orders keeps track of the orders sent for cars
+		//The assumption is that you cannot order cars before 
+		//the current order arrives
+		ArrayList<Orders> orders = new ArrayList<Orders>();
+		orders.add(new Orders(orderSize, 2));
+		int currentOrderIndex = 0;
 		int k = 1;
 		for (int i = 0; i < numberOfCycles; i++) {
+
 			for (int j = 0; j < n; j++) {
-				
-				if (i == 0 && j==0) {
+
+				record = new SimulationTableRecord();
+				if (i == 0 && j == 0) {
 					continue;
 				}
-				
-				record = new SimulationTableRecord();
-				record.setCycle(i+1);
+				record.setCycle(i + 1);
 				record.setDay(j + 1);
+				////////////////////////////////
+				//This parts doesn't work well
+				//Beginning Inventory
+				////////////////////////////////
+	
 				SimulationTableRecord previousRecord = record1.get(k - 1);
-				int previousEndingInventory = previousRecord.getEndingInventory();
-				if(previousRecord.getDaysToArrival()==0)
+				if (daysToNextOrder!='-')
 				{
-					record.setBeginningInventory(previousEndingInventory
-							+orderSize);
-					orderSize=0;
-					record.setOrderQuantity(0);
+					daysToNextOrder--;
+				}
+				if(daysToNextOrder=='-' && previousRecord.getDaysToArrival()=='-')
+				{
+					daysToNextOrder=orders.get(currentOrderIndex).leadDays;
+					record.setOrderQuantity(orders.get(currentOrderIndex).orderSize);
+				}
+				if (daysToNextOrder == 0) {
+					if((previousRecord.getEndingInventory() + orders.get(currentOrderIndex).orderSize)>=12)
+					{
+						record.setBeginningInventory(12);	
+					}
+					else
+					{
+						record.setBeginningInventory(previousRecord.getEndingInventory() + orders.get(currentOrderIndex).orderSize);
+					}
+					currentOrderIndex++;
+					record.setDaysToArrival('-');
+					daysToNextOrder='-';
+				} else if (daysToNextOrder != '-') {
+					record.setBeginningInventory(previousRecord.getEndingInventory());
+					record.setDaysToArrival(daysToNextOrder);
+				} else {
+					
+					record.setBeginningInventory(previousRecord.getEndingInventory());
 					record.setDaysToArrival('-');
 				}
-				else if(previousRecord.getDaysToArrival()!='-'){
-					record.setBeginningInventory(previousEndingInventory);
-					record.setDaysToArrival(previousRecord.getDaysToArrival()-1);
-				}
-				else {
-					record.setBeginningInventory(previousEndingInventory);
-					record.setDaysToArrival('-');
-				}
+				
+				
+				////////////////////////////////
+				//This parts works well
+				//Ending Inventory and demand
+				////////////////////////////////
+				
 				int currentDemand = Integer.parseInt(demandRandomTable.getCell(k, 2));
 				record.setDemand(currentDemand);
-				int endingStorage=(previousEndingInventory-currentDemand);
-				if(endingStorage<0)
+				
+				if((record.getBeginningInventory()-currentDemand)<0)
 				{
 					record.setEndingInventory(0);
-					record.setShortageQuatity(Math.abs(endingStorage)
-							+previousRecord.getShortageQuatity());
+					record.setShortageQuatity(Math.abs(record.getBeginningInventory()-currentDemand)+previousRecord.getShortageQuatity());
 				}
-				else
-				{
-					record.setEndingInventory(endingStorage);
+				else {
+					record.setEndingInventory(record.getBeginningInventory()-currentDemand);
 					record.setShortageQuatity(0);
-				};
+				}
 				
-				record1.add(record);
+				////////////////////////////////
+				////////////////////////////////
+				
+				if(currentOrderIndex==(orders.size()-1) && daysToNextOrder=='-')
+				{
+					record.setDaysToArrival(orders.get(currentOrderIndex).leadDays+1);
+					record.setOrderQuantity(orders.get(currentOrderIndex).orderSize);
+					daysToNextOrder=record.getDaysToArrival();
+					
+				}
+				
 				k++;
+				record1.add(record);
 			}
+			orders.add(new Orders(12-record.getEndingInventory(),Integer.parseInt(leadRandomTable.getCell(i, 2)) ));
 		}
 
 		Table storageSim = SimulationTableRecord.getTableRepresentation(n * numberOfCycles, record1);
