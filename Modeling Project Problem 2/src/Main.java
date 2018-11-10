@@ -4,6 +4,7 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
+import javax.xml.ws.AsyncHandler;
 
 public class Main {
 
@@ -72,10 +73,11 @@ public class Main {
 
 		// Showing the result in a JFrame
 
-		/*JFrame DemandFrame = new JFrame("Demand Probability");
-		DemandFrame.setSize(500, 500);
-		DemandFrame.add(DemandTable.table);
-		DemandFrame.setVisible(true);*/
+		/*
+		 * JFrame DemandFrame = new JFrame("Demand Probability");
+		 * DemandFrame.setSize(500, 500); DemandFrame.add(DemandTable.table);
+		 * DemandFrame.setVisible(true);
+		 */
 
 		//////////////////////////////////////////////////////
 
@@ -120,74 +122,118 @@ public class Main {
 		}
 		// Showing the result in a JFrame
 
-		/*JFrame leadFrame = new JFrame("Service Probability");
-		leadFrame.setSize(500, 500);
-		leadFrame.add(leadTable.table);
-		leadFrame.setVisible(true);*/
+		/*
+		 * JFrame leadFrame = new JFrame("Service Probability"); leadFrame.setSize(500,
+		 * 500); leadFrame.add(leadTable.table); leadFrame.setVisible(true);
+		 */
 
 		//////////////////////////////////////////////////////
 
 		//////////////////////////////////////////////////////
-		///Random values in the table
+		/// Random values in the table
 		//////////////////////////////////////////////////////
 
 		int numberOfCycles = 10;
 		int carsInStorage = 6;
 		int orderSize = 5;
 		int n = 2;
-		int daysToNextOrder=2;
-		Table demandRandomTable = new Table(n*numberOfCycles, 3);
+		int daysToNextOrder = 2;
+		Table demandRandomTable = new Table(n * numberOfCycles, 3);
 		Random random = new Random();
-		
-		for (int i = 0; i < numberOfCycles*n; i++) {
-		float x =(float) (0.001 + random.nextFloat() * (1 - 0.001));
-		int randomValue = Range.getRangeProbability(demandRange, x);
-		demandRandomTable.setValue(i, 0, i + 1 + "");
-		demandRandomTable.setValue(i, 1, x + "");
-		demandRandomTable.setValue(i, 2, randomValue + "");
+
+		for (int i = 0; i < numberOfCycles * n; i++) {
+			float x = (float) (0.001 + random.nextFloat() * (1 - 0.001));
+			int randomValue = Range.getRangeProbability(demandRange, x);
+			demandRandomTable.setValue(i, 0, i + 1 + "");
+			demandRandomTable.setValue(i, 1, x + "");
+			demandRandomTable.setValue(i, 2, randomValue + "");
 		}
 
-		/*JFrame randomDemandFrame = new JFrame("Demand Table");
-		 randomDemandFrame.setSize(500, 500);
-		 randomDemandFrame.add(demandRandomTable.table);
-		 randomDemandFrame.setVisible(true);*/
-		
+		/*
+		 * JFrame randomDemandFrame = new JFrame("Demand Table");
+		 * randomDemandFrame.setSize(500, 500);
+		 * randomDemandFrame.add(demandRandomTable.table);
+		 * randomDemandFrame.setVisible(true);
+		 */
+
 		Table leadRandomTable = new Table(numberOfCycles, 3);
 
 		for (int i = 0; i < numberOfCycles; i++) {
-			float x = (float)(0.001 + random.nextFloat() * (1 - 0.001));
+			float x = (float) (0.001 + random.nextFloat() * (1 - 0.001));
 			int randomValue = Range.getRangeProbability(leadRange, x) + 1;
 			leadRandomTable.setValue(i, 0, i + 1 + "");
 			leadRandomTable.setValue(i, 1, x + "");
 			leadRandomTable.setValue(i, 2, randomValue + "");
 		}
-		/*JFrame randomLeadFrame = new JFrame("Lead Table");
-		randomLeadFrame.setSize(500, 500);
-		randomLeadFrame.add(leadRandomTable.table);
-		randomLeadFrame.setVisible(true);*/
-		
+		/*
+		 * JFrame randomLeadFrame = new JFrame("Lead Table");
+		 * randomLeadFrame.setSize(500, 500);
+		 * randomLeadFrame.add(leadRandomTable.table); randomLeadFrame.setVisible(true);
+		 */
+
 		// Assume that the minimum is 3 cars because there is already an order for 5
 		// when the inventory amount is 2, meaning that the minimum is either 2 or 3
 		// 3 Sounds the most safe choice
-		//Assume the number of cycles is 10 because it is unclear in the requirements
-		
-		ArrayList<SimulationTableRecord> record1=new ArrayList<SimulationTableRecord>();
-		int firstDemand=Integer.parseInt(demandRandomTable.getCell(0, 2));
-		SimulationTableRecord record=new SimulationTableRecord(1,1,carsInStorage,
-				firstDemand,carsInStorage-firstDemand,0,orderSize, daysToNextOrder-1);
+		// Assume the number of cycles is 10 because it is unclear in the requirements
+
+		ArrayList<SimulationTableRecord> record1 = new ArrayList<SimulationTableRecord>();
+		int firstDemand = Integer.parseInt(demandRandomTable.getCell(0, 2));
+		SimulationTableRecord record = new SimulationTableRecord(1, 1, carsInStorage, firstDemand,
+				carsInStorage - firstDemand, 0, orderSize, daysToNextOrder - 1);
 		record1.add(record);
-		int k=0;
-		for(int i =0; i<numberOfCycles;i++)
-		{
-			for(int j=0;j<n;j++)
-			{
+		
+		int k = 1;
+		for (int i = 0; i < numberOfCycles; i++) {
+			for (int j = 0; j < n; j++) {
 				
+				if (i == 0 && j==0) {
+					continue;
+				}
+				
+				record = new SimulationTableRecord();
+				record.setCycle(i+1);
+				record.setDay(j + 1);
+				SimulationTableRecord previousRecord = record1.get(k - 1);
+				int previousEndingInventory = previousRecord.getEndingInventory();
+				if(previousRecord.getDaysToArrival()==0)
+				{
+					record.setBeginningInventory(previousEndingInventory
+							+orderSize);
+					orderSize=0;
+					record.setOrderQuantity(0);
+					record.setDaysToArrival('-');
+				}
+				else if(previousRecord.getDaysToArrival()!='-'){
+					record.setBeginningInventory(previousEndingInventory);
+					record.setDaysToArrival(previousRecord.getDaysToArrival()-1);
+				}
+				else {
+					record.setBeginningInventory(previousEndingInventory);
+					record.setDaysToArrival('-');
+				}
+				int currentDemand = Integer.parseInt(demandRandomTable.getCell(k, 2));
+				record.setDemand(currentDemand);
+				int endingStorage=(previousEndingInventory-currentDemand);
+				if(endingStorage<0)
+				{
+					record.setEndingInventory(0);
+					record.setShortageQuatity(Math.abs(endingStorage)
+							+previousRecord.getShortageQuatity());
+				}
+				else
+				{
+					record.setEndingInventory(endingStorage);
+					record.setShortageQuatity(0);
+				};
+				
+				record1.add(record);
+				k++;
 			}
 		}
-		
-		Table storageSim = SimulationTableRecord.getTableRepresentation(n*numberOfCycles, record1);
-		String headers3[]= {"Cycle","Day","Beginning Inventory","Demand","Ending Inventory"
-				,"Shortage Quatity","Order Quantity","Days To Arrival"};
+
+		Table storageSim = SimulationTableRecord.getTableRepresentation(n * numberOfCycles, record1);
+		String headers3[] = { "Cycle", "Day", "Beginning Inventory", "Demand", "Ending Inventory", "Shortage Quatity",
+				"Order Quantity", "Days To Arrival" };
 		storageSim.setTitles(headers3);
 		JFrame resultsFrame = new JFrame("Results Table");
 		resultsFrame.setSize(900, 500);

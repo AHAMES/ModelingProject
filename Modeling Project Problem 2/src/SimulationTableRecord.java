@@ -150,7 +150,11 @@ public class SimulationTableRecord {
 			simulation.setValue(i, 4, ""+records.get(i).endingInventory);
 			simulation.setValue(i, 5, ""+records.get(i).shortageQuatity);
 			simulation.setValue(i, 6, ""+records.get(i).orderQuantity);
+			if(records.get(i).daysToArrival=='-')
+			simulation.setValue(i, 7, ""+(char)records.get(i).daysToArrival);
+			else
 			simulation.setValue(i, 7, ""+records.get(i).daysToArrival);
+			
 		}
 		
 		
