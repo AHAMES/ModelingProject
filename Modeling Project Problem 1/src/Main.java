@@ -132,14 +132,14 @@ public class Main {
 		//////////////////////////////////////////////////////
 		///Random values in the table
 		//////////////////////////////////////////////////////
-		
-		Table interArrivalRandomTable = new Table(20, 3);
+		int numberOfCustomers = 10;
+		Table interArrivalRandomTable = new Table(numberOfCustomers, 3);
 		Random random = new Random();
 		interArrivalRandomTable.setValue(0, 0, 1 + "");
 		interArrivalRandomTable.setValue(0, 1, "-");
 		interArrivalRandomTable.setValue(0, 2, "-");
 
-		for (int i = 1; i < 20; i++) {
+		for (int i = 1; i < numberOfCustomers; i++) {
 			double n = (0.001 + random.nextDouble() * (1 - 0.001));
 			int randomValue = Range.getRangeProbability(interArrivalRange, n);
 			interArrivalRandomTable.setValue(i, 0, i + 1 + "");
@@ -154,7 +154,7 @@ public class Main {
 		 * randomInterArrivalFrame.setVisible(true);
 		 */
 
-		int numberOfCustomers = 20;
+		
 		Table serviceTimeRandomTable = new Table(numberOfCustomers, 3);
 
 		for (int i = 0; i < numberOfCustomers; i++) {

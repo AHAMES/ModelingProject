@@ -1,4 +1,9 @@
+import java.awt.ScrollPane;
+import java.util.ArrayList;
+import java.util.Random;
+
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 
 public class Main {
 
@@ -32,12 +37,12 @@ public class Main {
 		//////////////////////////////////////////////////////
 
 		// Demand Probability Range
-		Range[] DemandRange = new Range[5];
-		DemandRange[0] = new Range();
+		Range[] demandRange = new Range[5];
+		demandRange[0] = new Range();
 
 		// Initializing the first range is done manually
-		DemandRange[0].first = cumulativeDemandlProbability;
-		DemandRange[0].second = DemandProbabilityList[0];
+		demandRange[0].first = cumulativeDemandlProbability;
+		demandRange[0].second = DemandProbabilityList[0];
 
 		// Initializing the demand probability table
 		// First record is done manually
@@ -48,29 +53,29 @@ public class Main {
 		DemandTable.setValue(0, 0, 0 + "");
 		DemandTable.setValue(0, 1, DemandProbabilityList[0] + "");
 		DemandTable.setValue(0, 2, DemandProbabilityList[0] + "");
-		DemandTable.setValue(0, 3, DemandRange[0].toString());
+		DemandTable.setValue(0, 3, demandRange[0].toString());
 		cumulativeDemandlProbability = DemandProbabilityList[0];
 
 		// Populating the rest of the table in a loop
 		for (int i = 1; i < length1; i++) {
-			DemandRange[i] = new Range();
-			DemandRange[i].first = (cumulativeDemandlProbability * 100) + 1;
-			DemandRange[i].first /= 100;
+			demandRange[i] = new Range();
+			demandRange[i].first = (cumulativeDemandlProbability * 100) + 1;
+			demandRange[i].first /= 100;
 			cumulativeDemandlProbability += DemandProbabilityList[i];
-			DemandRange[i].second = cumulativeDemandlProbability;
+			demandRange[i].second = cumulativeDemandlProbability;
 			DemandTable.setValue(i, 0, i + "");
 			DemandTable.setValue(i, 1, DemandProbabilityList[i] + "");
 			DemandTable.setValue(i, 2, cumulativeDemandlProbability + "");
-			DemandTable.setValue(i, 3, DemandRange[i].toString());
+			DemandTable.setValue(i, 3, demandRange[i].toString());
 
 		}
 
 		// Showing the result in a JFrame
 
-		JFrame DemandFrame = new JFrame("DemandProbability");
+		/*JFrame DemandFrame = new JFrame("Demand Probability");
 		DemandFrame.setSize(500, 500);
 		DemandFrame.add(DemandTable.table);
-		DemandFrame.setVisible(true);
+		DemandFrame.setVisible(true);*/
 
 		//////////////////////////////////////////////////////
 
@@ -79,12 +84,12 @@ public class Main {
 		//////////////////////////////////////////////////////
 
 		// Service time Probability Range
-		Range[] LeadRange = new Range[3];
-		LeadRange[0] = new Range();
+		Range[] leadRange = new Range[3];
+		leadRange[0] = new Range();
 
 		// Initializing the first range is done manually
-		LeadRange[0].first = cumulativeLeadProbability;
-		LeadRange[0].second = LeadTimeList[0];
+		leadRange[0].first = cumulativeLeadProbability;
+		leadRange[0].second = LeadTimeList[0];
 
 		// Initializing the inter-arrival probability table
 		// First record is done manually
@@ -97,30 +102,97 @@ public class Main {
 		leadTable.setValue(0, 0, 1 + "");
 		leadTable.setValue(0, 1, LeadTimeList[0] + "");
 		leadTable.setValue(0, 2, LeadTimeList[0] + "");
-		leadTable.setValue(0, 3, LeadRange[0].toString());
+		leadTable.setValue(0, 3, leadRange[0].toString());
 		cumulativeLeadProbability = LeadTimeList[0];
 
 		// Populating the rest of the table in a loop
 		for (int i = 1; i < length2; i++) {
-			LeadRange[i] = new Range();
-			LeadRange[i].first = (cumulativeLeadProbability * 100) + 1;
-			LeadRange[i].first /= 100;
+			leadRange[i] = new Range();
+			leadRange[i].first = (cumulativeLeadProbability * 100) + 1;
+			leadRange[i].first /= 100;
 			cumulativeLeadProbability += LeadTimeList[i];
-			LeadRange[i].second = cumulativeLeadProbability;
+			leadRange[i].second = cumulativeLeadProbability;
 			leadTable.setValue(i, 0, i + 1 + "");
 			leadTable.setValue(i, 1, LeadTimeList[i] + "");
 			leadTable.setValue(i, 2, cumulativeLeadProbability + "");
-			leadTable.setValue(i, 3, LeadRange[i].toString());
+			leadTable.setValue(i, 3, leadRange[i].toString());
 
 		}
 		// Showing the result in a JFrame
-		
-		 JFrame leadFrame = new JFrame(); leadFrame.setSize(500, 500);
-		 leadFrame.add(leadTable.table);
-		 leadFrame.setVisible(true);
-		 
+
+		/*JFrame leadFrame = new JFrame("Service Probability");
+		leadFrame.setSize(500, 500);
+		leadFrame.add(leadTable.table);
+		leadFrame.setVisible(true);*/
+
 		//////////////////////////////////////////////////////
 
+		//////////////////////////////////////////////////////
+		///Random values in the table
+		//////////////////////////////////////////////////////
+
+		int numberOfCycles = 10;
+		int carsInStorage = 6;
+		int orderSize = 5;
+		int n = 2;
+		int daysToNextOrder=2;
+		Table demandRandomTable = new Table(n*numberOfCycles, 3);
+		Random random = new Random();
+		
+		for (int i = 0; i < numberOfCycles*n; i++) {
+		float x =(float) (0.001 + random.nextFloat() * (1 - 0.001));
+		int randomValue = Range.getRangeProbability(demandRange, x);
+		demandRandomTable.setValue(i, 0, i + 1 + "");
+		demandRandomTable.setValue(i, 1, x + "");
+		demandRandomTable.setValue(i, 2, randomValue + "");
+		}
+
+		/*JFrame randomDemandFrame = new JFrame("Demand Table");
+		 randomDemandFrame.setSize(500, 500);
+		 randomDemandFrame.add(demandRandomTable.table);
+		 randomDemandFrame.setVisible(true);*/
+		
+		Table leadRandomTable = new Table(numberOfCycles, 3);
+
+		for (int i = 0; i < numberOfCycles; i++) {
+			float x = (float)(0.001 + random.nextFloat() * (1 - 0.001));
+			int randomValue = Range.getRangeProbability(leadRange, x) + 1;
+			leadRandomTable.setValue(i, 0, i + 1 + "");
+			leadRandomTable.setValue(i, 1, x + "");
+			leadRandomTable.setValue(i, 2, randomValue + "");
+		}
+		/*JFrame randomLeadFrame = new JFrame("Lead Table");
+		randomLeadFrame.setSize(500, 500);
+		randomLeadFrame.add(leadRandomTable.table);
+		randomLeadFrame.setVisible(true);*/
+		
+		// Assume that the minimum is 3 cars because there is already an order for 5
+		// when the inventory amount is 2, meaning that the minimum is either 2 or 3
+		// 3 Sounds the most safe choice
+		//Assume the number of cycles is 10 because it is unclear in the requirements
+		
+		ArrayList<SimulationTableRecord> record1=new ArrayList<SimulationTableRecord>();
+		int firstDemand=Integer.parseInt(demandRandomTable.getCell(0, 2));
+		SimulationTableRecord record=new SimulationTableRecord(1,1,carsInStorage,
+				firstDemand,carsInStorage-firstDemand,0,orderSize, daysToNextOrder-1);
+		record1.add(record);
+		int k=0;
+		for(int i =0; i<numberOfCycles;i++)
+		{
+			for(int j=0;j<n;j++)
+			{
+				
+			}
+		}
+		
+		Table storageSim = SimulationTableRecord.getTableRepresentation(n*numberOfCycles, record1);
+		String headers3[]= {"Cycle","Day","Beginning Inventory","Demand","Ending Inventory"
+				,"Shortage Quatity","Order Quantity","Days To Arrival"};
+		storageSim.setTitles(headers3);
+		JFrame resultsFrame = new JFrame("Results Table");
+		resultsFrame.setSize(900, 500);
+		resultsFrame.add(new JScrollPane(storageSim.table));
+		resultsFrame.setVisible(true);
 	}
 
 }

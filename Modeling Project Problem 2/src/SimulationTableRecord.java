@@ -140,7 +140,7 @@ public class SimulationTableRecord {
 	public static Table getTableRepresentation(int numberOfCustomers,
 			ArrayList<SimulationTableRecord> records)
 	{
-		Table simulation = new Table(numberOfCustomers, 9);
+		Table simulation = new Table(numberOfCustomers, 8);
 		for(int i=0;i<records.size();i++)
 		{
 			simulation.setValue(i, 0, ""+records.get(i).cycle);
