@@ -176,8 +176,8 @@ public class Main {
 		ArrayList<SimulationTableRecord> record2 = new ArrayList<SimulationTableRecord>();
 		ArrayList<SimulationTableRecord> recordTotal = new ArrayList<SimulationTableRecord>();
 		int sr = Integer.parseInt(serviceTimeRandomTable.getCell(0, 2));
-		record1.add(new SimulationTableRecord(1, 0, 0, sr, 0, 0, sr, 0, 0));
-		record2.add(new SimulationTableRecord(0, 0, 0, 0, 0, 0, 0, 0, 0));
+		record1.add(new SimulationTableRecord("Drive",1, 0, 0, sr, 0, 0, sr, 0, 0));
+		record2.add(new SimulationTableRecord("Dummy",0, 0, 0, 0, 0, 0, 0, 0, 0));
 		recordTotal.add(record1.get(0));
 		int nextAvailableTime = sr;
 		LinkedList<Integer> carQueue = new LinkedList<Integer>();
@@ -211,6 +211,8 @@ public class Main {
 				record.setTimeServiceEnds(record.getTimeServiceBegins()+ record.getServiceTime());
 				record.setTimeSpentInSystem(record.getTimeServiceEnds()- record.getArrivalTime());
 				nextAvailableTime = record.getTimeServiceEnds();
+
+				record.setWhichQueue("Drive");
 				record1.add(record);
 				carQueue.add(record.getCustomerNumber());
 				i++;
@@ -234,6 +236,7 @@ public class Main {
 				record.setTimeServiceEnds(record.getTimeServiceBegins()+ record.getServiceTime());
 				record.setTimeSpentInSystem(record.getTimeServiceEnds()- record.getArrivalTime());
 
+				record.setWhichQueue("Bank");
 				record2.add(record);
 				j++;
 			}
@@ -241,7 +244,7 @@ public class Main {
 		}
 		//Table for the drive in Teller
 		Table driveInSim = SimulationTableRecord.getTableRepresentation(record1.toArray().length, record1);
-		String headers3[] = { "Customer", "Inter-Arrival Time", "Arrival Time", "Service Time", "Service Begins",
+		String headers3[] = {"Queue" ,"Customer", "Inter-Arrival Time", "Arrival Time", "Service Time", "Service Begins",
 				"Waiting", "Service ends", "Time Spent", "Idle" };
 		driveInSim.setTitles(headers3);
 		

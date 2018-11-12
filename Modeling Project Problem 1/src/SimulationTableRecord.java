@@ -11,9 +11,15 @@ public class SimulationTableRecord {
 	private int timeServiceEnds;
 	private int timeSpentInSystem;
 	private int serverIdleTime;
+	private String whichQueue;
 	//////////////////////////
 	///getters
 	/////////////////////////
+	
+	public String getWhichQueue()
+	{
+		return whichQueue;
+	}
 	public int getCustomerNumber()
 	{
 		return customerNumber;
@@ -57,6 +63,10 @@ public class SimulationTableRecord {
 	//////////////////////////
 	///setters
 	/////////////////////////
+	public void setWhichQueue(String cn)
+	{
+		whichQueue=cn;
+	}
 	public void setCustomerNumber(int cn)
 	{
 		customerNumber=cn;
@@ -106,10 +116,11 @@ public class SimulationTableRecord {
 		
 	}
 	
-	public SimulationTableRecord(int CN,int IAT,int AT,
+	public SimulationTableRecord(String WQ,int CN,int IAT,int AT,
 			int ST, int TSB, int WTQ,int TSE, int TSS,
 			int SIT)
 	{
+		whichQueue=WQ;
 		customerNumber=CN;
 		interArrivalTime=IAT;
 		arrivalTime=AT;
@@ -126,18 +137,19 @@ public class SimulationTableRecord {
 	public static Table getTableRepresentation(int numberOfCustomers,
 			SimulationTableRecord records[])
 	{
-		Table simulation = new Table(numberOfCustomers, 9);
+		Table simulation = new Table(numberOfCustomers, 10);
 		for(int i=0;i<records.length;i++)
 		{
-			simulation.setValue(i, 0, ""+records[i].customerNumber);
-			simulation.setValue(i, 1, ""+records[i].interArrivalTime);
-			simulation.setValue(i, 2, ""+records[i].arrivalTime);
-			simulation.setValue(i, 3, ""+records[i].serviceTime);
-			simulation.setValue(i, 4, ""+records[i].timeServiceBegins);
-			simulation.setValue(i, 5, ""+records[i].waitingTimeInQueue);
-			simulation.setValue(i, 6, ""+records[i].timeServiceEnds);
-			simulation.setValue(i, 7, ""+records[i].timeSpentInSystem);
-			simulation.setValue(i, 8, ""+records[i].serverIdleTime);
+			simulation.setValue(i, 0, records[i].whichQueue);
+			simulation.setValue(i, 1, ""+records[i].customerNumber);
+			simulation.setValue(i, 2, ""+records[i].interArrivalTime);
+			simulation.setValue(i, 3, ""+records[i].arrivalTime);
+			simulation.setValue(i, 4, ""+records[i].serviceTime);
+			simulation.setValue(i, 5, ""+records[i].timeServiceBegins);
+			simulation.setValue(i, 6, ""+records[i].waitingTimeInQueue);
+			simulation.setValue(i, 7, ""+records[i].timeServiceEnds);
+			simulation.setValue(i, 8, ""+records[i].timeSpentInSystem);
+			simulation.setValue(i, 9, ""+records[i].serverIdleTime);
 		}
 		
 		
@@ -150,18 +162,19 @@ public class SimulationTableRecord {
 	public static Table getTableRepresentation(int numberOfCustomers,
 			ArrayList<SimulationTableRecord> records)
 	{
-		Table simulation = new Table(numberOfCustomers, 9);
+		Table simulation = new Table(numberOfCustomers, 10);
 		for(int i=0;i<records.size();i++)
 		{
-			simulation.setValue(i, 0, ""+records.get(i).customerNumber);
-			simulation.setValue(i, 1, ""+records.get(i).interArrivalTime);
-			simulation.setValue(i, 2, ""+records.get(i).arrivalTime);
-			simulation.setValue(i, 3, ""+records.get(i).serviceTime);
-			simulation.setValue(i, 4, ""+records.get(i).timeServiceBegins);
-			simulation.setValue(i, 5, ""+records.get(i).waitingTimeInQueue);
-			simulation.setValue(i, 6, ""+records.get(i).timeServiceEnds);
-			simulation.setValue(i, 7, ""+records.get(i).timeSpentInSystem);
-			simulation.setValue(i, 8, ""+records.get(i).serverIdleTime);
+			simulation.setValue(i, 0, records.get(i).whichQueue);
+			simulation.setValue(i, 1, ""+records.get(i).customerNumber);
+			simulation.setValue(i, 2, ""+records.get(i).interArrivalTime);
+			simulation.setValue(i, 3, ""+records.get(i).arrivalTime);
+			simulation.setValue(i, 4, ""+records.get(i).serviceTime);
+			simulation.setValue(i, 5, ""+records.get(i).timeServiceBegins);
+			simulation.setValue(i, 6, ""+records.get(i).waitingTimeInQueue);
+			simulation.setValue(i, 7, ""+records.get(i).timeServiceEnds);
+			simulation.setValue(i, 8, ""+records.get(i).timeSpentInSystem);
+			simulation.setValue(i, 9, ""+records.get(i).serverIdleTime);
 		}
 		
 		
@@ -169,8 +182,7 @@ public class SimulationTableRecord {
 	}
 	//Returns a table of required answers
 	public static Table getAnswers(ArrayList<SimulationTableRecord> driveIn,
-			ArrayList<SimulationTableRecord> inBank
-			)
+			ArrayList<SimulationTableRecord> inBank)
 	{
 		Table answers= new Table(1, 5);
 		double averageServiceTime=0;
