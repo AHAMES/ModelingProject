@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
@@ -11,7 +12,8 @@ public class Main {
 
 		ArrayList<Answer> answers = new ArrayList<Answer>();
 		ArrayList<JTabbedPane> details = new ArrayList<>();
-		int numberOfRuns = 100;
+		int numberOfRuns = Integer.parseInt(JOptionPane.showInputDialog("Input Number of Runs"));
+		int numberOfCustomers = Integer.parseInt(JOptionPane.showInputDialog("Number of Customers"));
 		for (int l = 0; l < numberOfRuns; l++) {// If float problem happens
 
 			// Initializing given probability tables
@@ -136,7 +138,7 @@ public class Main {
 			//////////////////////////////////////////////////////
 			/// Random values in the table
 			//////////////////////////////////////////////////////
-			int numberOfCustomers = 100;
+		
 			Table interArrivalRandomTable = new Table(numberOfCustomers, 3);
 			Random random = new Random();
 			interArrivalRandomTable.setValue(0, 0, 1 + "");
@@ -257,7 +259,7 @@ public class Main {
 			totalSim.setTitles(headers3);
 
 			//Storing the answers of this run in a Answer object
-			Answer answer = SimulationTableRecord.getAnswers(record1, record2);
+			Answer answer = SimulationTableRecord.getAnswers(record1, record2,recordTotal);
 			/*
 			 * String answersHeaders[] = { "Drive In Serv Avg", "Drive In Wait Avg",
 			 * "In Bank Serv Avg", "In Bank Wait Avg",
@@ -275,22 +277,31 @@ public class Main {
 			//Storing the Answer object of this run in an ArrayList
 			answers.add(answer);
 		}
+		
 		Table answerTable = Answer.getTableRepresentation(numberOfRuns, answers);
 		JTabbedPane finalPanel = new JTabbedPane();
+		
+		//Details tabbed panel
+		//Fill with the tabbed Panel
+		
 		JTabbedPane detailsPanel = new JTabbedPane();
 		for (int i = 0; i < numberOfRuns; i++) {
 			detailsPanel.add("Run " + (i + 1), details.get(i));
 		}
+		
 		String answersHeaders[] = { "Run ID", "Drive In Serv Avg", "Drive In Wait Avg", "In Bank Serv Avg",
 				"In Bank Wait Avg", "Probability Bank Waiting", "Probability Bank Idle", "Maximum Queue Length" };
+		
 		answerTable.setTitles(answersHeaders);
 		JFrame finalFrame = new JFrame("Results");
+		
 		String finalAnswersHeaders[] = { "Drive In Serv Avg", "Drive In Wait Avg", "In Bank Serv Avg",
 				"In Bank Wait Avg", "Probability Bank Waiting", "Probability Bank Idle", "Maximum Queue Length" };
 		Table finalTable = Answer.getAverageOfAllRuns(numberOfRuns, answers);
 		finalTable.setTitles(finalAnswersHeaders);
+		
 		finalPanel.addTab("Run Results", new JScrollPane(answerTable.table));
-		finalPanel.addTab("Details", detailsPanel);
+		finalPanel.addTab("Details", new JScrollPane(detailsPanel));
 		finalPanel.addTab("Final Answer", new JScrollPane(finalTable.table));
 
 		finalFrame.add(finalPanel);

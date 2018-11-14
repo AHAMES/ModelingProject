@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -32,7 +30,6 @@ public class Table {
 	}
 	public void setValue(int row, int column, String value) {
 		model.setValueAt(value, row, column);
-
 	}
 	
 	public String getCell(int row,int column)

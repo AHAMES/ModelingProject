@@ -123,7 +123,9 @@ public class SimulationTableRecord {
 	// Creates and returns a table to for the records
 	// Uses normal array
 	public static Table getTableRepresentation(int numberOfCustomers, SimulationTableRecord records[]) {
+		
 		Table simulation = new Table(numberOfCustomers, 10);
+		
 		for (int i = 0; i < records.length; i++) {
 			simulation.setValue(i, 0, records[i].whichQueue);
 			simulation.setValue(i, 1, "" + records[i].customerNumber);
@@ -161,7 +163,9 @@ public class SimulationTableRecord {
 	}
 
 	// Returns an Answer of required answers
-	public static Answer getAnswers(ArrayList<SimulationTableRecord> driveIn, ArrayList<SimulationTableRecord> inBank) {
+	public static Answer getAnswers(ArrayList<SimulationTableRecord> driveIn, 
+			                        ArrayList<SimulationTableRecord> inBank,
+			                        ArrayList<SimulationTableRecord> total) {
 
 		double averageServiceTime = 0;
 		double averageWaitingTime = 0;
@@ -176,6 +180,11 @@ public class SimulationTableRecord {
 		averageWaitingTime = 0;
 		double countWaiting = 0, countIdle = 0;
 
+		int totalIdle=0;
+		for(SimulationTableRecord x: total)
+		{
+			totalIdle+=x.serverIdleTime;
+		}
 		for (int i = 1; i < inBank.size(); i++) {
 			averageServiceTime += inBank.get(i).serviceTime;
 			averageWaitingTime += inBank.get(i).waitingTimeInQueue;
@@ -183,7 +192,7 @@ public class SimulationTableRecord {
 				countWaiting++;
 			}
 			if (inBank.get(i).getServerIdleTime() > 0) {
-				countIdle++;
+				countIdle+=inBank.get(i).getServerIdleTime();
 			}
 		}
 
@@ -213,7 +222,7 @@ public class SimulationTableRecord {
 		}
 		return new Answer(driveInServiceTimeAvg, driveInWaitingTime, averageServiceTime / (inBank.size() - 1),
 				averageWaitingTime / (inBank.size() - 1), countWaiting / (inBank.size() - 1),
-				countIdle / (inBank.size() - 1), longestQueue);
+				countIdle / totalIdle, longestQueue);
 	}
 
 }
