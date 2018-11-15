@@ -1,3 +1,4 @@
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
@@ -68,8 +69,11 @@ public class Main {
 			// Populating the rest of the table in a loop
 			for (int i = 1; i < length1; i++) {
 				interArrivalRange[i] = new Range();
-				interArrivalRange[i].first = (cumulativeInterArrivalProbability * 100) + 1;
+				DecimalFormat df=new DecimalFormat();
+				df.setMaximumFractionDigits(2);
+				interArrivalRange[i].first = Double.parseDouble(df.format((cumulativeInterArrivalProbability))) * 100 + 1;
 				interArrivalRange[i].first /= 100;
+				cumulativeInterArrivalProbability = Double.parseDouble(df.format(cumulativeInterArrivalProbability)); 
 				cumulativeInterArrivalProbability += interArrivalTimeProbabilityList[i];
 				interArrivalRange[i].second = cumulativeInterArrivalProbability;
 				interArrivalTable.setValue(i, 0, i + "");
@@ -81,11 +85,11 @@ public class Main {
 
 			// Showing the result in a JFrame
 
-			/*
-			 * JFrame interArrivalFrame = new JFrame(); interArrivalFrame.setSize(500, 500);
-			 * interArrivalFrame.add(interArrivalTable.table);
-			 * interArrivalFrame.setVisible(true);
-			 */
+			
+			 JFrame interArrivalFrame = new JFrame(); interArrivalFrame.setSize(500, 500);
+			 interArrivalFrame.add(interArrivalTable.table);
+			 interArrivalFrame.setVisible(true);
+			 
 
 			//////////////////////////////////////////////////////
 
@@ -116,10 +120,13 @@ public class Main {
 
 			// Populating the rest of the table in a loop
 			for (int i = 1; i < length2; i++) {
+				DecimalFormat df=new DecimalFormat();
+				df.setMaximumFractionDigits(2);
 				serviceTimeRange[i] = new Range();
-				serviceTimeRange[i].first = (cumulativeServiceTimeProbability * 100) + 1;
+				serviceTimeRange[i].first =((Double.parseDouble(df.format(cumulativeServiceTimeProbability))) * 100) + 1;
 				serviceTimeRange[i].first /= 100;
-				cumulativeServiceTimeProbability += serviceTimeProbabilityList[i];
+				cumulativeServiceTimeProbability += Double.parseDouble(df.format(serviceTimeProbabilityList[i]));
+				cumulativeServiceTimeProbability = Double.parseDouble(df.format(cumulativeServiceTimeProbability));
 				serviceTimeRange[i].second = cumulativeServiceTimeProbability;
 				serviceTimeTable.setValue(i, 0, i + 1 + "");
 				serviceTimeTable.setValue(i, 1, serviceTimeProbabilityList[i] + "");
@@ -128,11 +135,11 @@ public class Main {
 
 			}
 			// Showing the result in a JFrame
-			/*
-			 * Frame serviceTimeFrame = new JFrame(); serviceTimeFrame.setSize(500, 500);
-			 * serviceTimeFrame.add(serviceTimeTable.table);
-			 * serviceTimeFrame.setVisible(true);
-			 */
+			
+			  /*JFrame serviceTimeFrame = new JFrame(); serviceTimeFrame.setSize(500, 500);
+			  serviceTimeFrame.add(serviceTimeTable.table);
+			  serviceTimeFrame.setVisible(true);*/
+			 
 			//////////////////////////////////////////////////////
 
 			//////////////////////////////////////////////////////

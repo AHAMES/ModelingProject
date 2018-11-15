@@ -1,14 +1,14 @@
 public class Range {
 
-	float first;
-	float second;
+	double first;
+	double second;
 
 	public Range() {
 		first = 0;
 		second = 0;
 	}
 
-	public Range(float f, float s) {
+	public Range(double f, double s) {
 		first = f;
 		second = s;
 	}
@@ -19,7 +19,7 @@ public class Range {
 		return first + "-" + second;
 	}
 
-	static int getRangeProbability(Range[] ranges, float currentRange) {
+	static int getRangeProbability(Range[] ranges, double currentRange) {
 		for (int i = 0, l = ranges.length; i < l; i++) {
 			if(currentRange>=ranges[i].first && currentRange<=ranges[i].second)
 			{

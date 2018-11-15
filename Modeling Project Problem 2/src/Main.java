@@ -1,8 +1,10 @@
 import java.awt.ScrollPane;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Random;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.xml.ws.AsyncHandler;
 
@@ -10,25 +12,39 @@ public class Main {
 
 	public static void main(String[] args) {
 
+		//Three assumptions to ask Carl
+		//1) The minimum is 4 or any number of my liking
+		//2) The lead time is calculated per cycle
+		//meaning that if i get 5 leaed times, but i order at cycle 3, 
+		//I will ignore the 2 before it
+		//3) I only order at the beginning of the cycle
+		//Meaning that even if i get shortage in the middle of the cycle
+		//I will still ignore it and wait 
+		
+		//Minimum number in storage after which we must order a new shipment
+		int minimumVehicle=Integer.parseInt(JOptionPane.showInputDialog("Input Minimum Vehicles"));
+		int n = Integer.parseInt(JOptionPane.showInputDialog("Input N"));
+		int numberOfCycles = Integer.parseInt(JOptionPane.showInputDialog("Input number of Cycles"));
+		
 		// Initializing given probability tables
-		float[] DemandProbabilityList = new float[5];
-		float[] LeadTimeList = new float[3];
+		double[] DemandProbabilityList = new double[5];
+		double[] LeadTimeList = new double[3];
 
 		// Initializing the Demand table
-		DemandProbabilityList[0] = (float) 0.05;
-		DemandProbabilityList[1] = (float) 0.28;
-		DemandProbabilityList[2] = (float) 0.37;
-		DemandProbabilityList[3] = (float) 0.20;
-		DemandProbabilityList[4] = (float) 0.10;
+		DemandProbabilityList[0] = (double) 0.05;
+		DemandProbabilityList[1] = (double) 0.28;
+		DemandProbabilityList[2] = (double) 0.37;
+		DemandProbabilityList[3] = (double) 0.20;
+		DemandProbabilityList[4] = (double) 0.10;
 
 		// Initializing the Lead time table
-		LeadTimeList[0] = (float) 0.55;
-		LeadTimeList[1] = (float) 0.35;
-		LeadTimeList[2] = (float) 0.1;
+		LeadTimeList[0] = (double) 0.55;
+		LeadTimeList[1] = (double) 0.35;
+		LeadTimeList[2] = (double) 0.1;
 
 		// Cumulative probability used in the tables
-		float cumulativeDemandlProbability = (float) 0.001;
-		float cumulativeLeadProbability = (float) 0.001;
+		double cumulativeDemandlProbability = (double) 0.001;
+		double cumulativeLeadProbability = (double) 0.001;
 
 		// probability table length
 		int length1 = DemandProbabilityList.length;
@@ -60,10 +76,13 @@ public class Main {
 		// Populating the rest of the table in a loop
 		for (int i = 1; i < length1; i++) {
 			demandRange[i] = new Range();
-			demandRange[i].first = (cumulativeDemandlProbability * 100) + 1;
+			DecimalFormat df=new DecimalFormat();
+			df.setMaximumFractionDigits(2);
+			demandRange[i].first = (Double.parseDouble((df.format(cumulativeDemandlProbability))) * 100) + 1;
 			demandRange[i].first /= 100;
-			cumulativeDemandlProbability += DemandProbabilityList[i];
-			demandRange[i].second = cumulativeDemandlProbability;
+			cumulativeDemandlProbability += Double.parseDouble(df.format((DemandProbabilityList[i])));
+			cumulativeDemandlProbability =Double.parseDouble(df.format((cumulativeDemandlProbability)));
+			demandRange[i].second = Double.parseDouble(df.format((cumulativeDemandlProbability)));
 			DemandTable.setValue(i, 0, i + "");
 			DemandTable.setValue(i, 1, DemandProbabilityList[i] + "");
 			DemandTable.setValue(i, 2, cumulativeDemandlProbability + "");
@@ -73,11 +92,11 @@ public class Main {
 
 		// Showing the result in a JFrame
 
-		/*
-		 * JFrame DemandFrame = new JFrame("Demand Probability");
-		 * DemandFrame.setSize(500, 500); DemandFrame.add(DemandTable.table);
-		 * DemandFrame.setVisible(true);
-		 */
+			
+		 /*JFrame DemandFrame = new JFrame("Demand Probability");
+		 DemandFrame.setSize(500, 500); DemandFrame.add(DemandTable.table);
+		 DemandFrame.setVisible(true);*/
+		 
 
 		//////////////////////////////////////////////////////
 
@@ -109,10 +128,13 @@ public class Main {
 
 		// Populating the rest of the table in a loop
 		for (int i = 1; i < length2; i++) {
+			DecimalFormat df=new DecimalFormat();
+			df.setMaximumFractionDigits(2);
 			leadRange[i] = new Range();
-			leadRange[i].first = (cumulativeLeadProbability * 100) + 1;
+			leadRange[i].first = Double.parseDouble((df.format((cumulativeLeadProbability) * 100))) + 1;
 			leadRange[i].first /= 100;
-			cumulativeLeadProbability += LeadTimeList[i];
+			cumulativeLeadProbability += Double.parseDouble(df.format(LeadTimeList[i]));
+			cumulativeLeadProbability = Double.parseDouble((df.format(cumulativeLeadProbability))) ;
 			leadRange[i].second = cumulativeLeadProbability;
 			leadTable.setValue(i, 0, i + 1 + "");
 			leadTable.setValue(i, 1, LeadTimeList[i] + "");
@@ -122,10 +144,10 @@ public class Main {
 		}
 		// Showing the result in a JFrame
 
-		/*
-		 * JFrame leadFrame = new JFrame("Service Probability"); leadFrame.setSize(500,
-		 * 500); leadFrame.add(leadTable.table); leadFrame.setVisible(true);
-		 */
+		
+		 JFrame leadFrame = new JFrame("Service Probability"); leadFrame.setSize(500,
+		 500); leadFrame.add(leadTable.table); leadFrame.setVisible(true);
+		 
 
 		//////////////////////////////////////////////////////
 
@@ -133,16 +155,16 @@ public class Main {
 		/// Random values in the table
 		//////////////////////////////////////////////////////
 
-		int numberOfCycles = 10;
+	
 		int carsInStorage = 6;
 		int orderSize = 5;
-		int n = 2;
+		
 		int daysToNextOrder = 2;
 		Table demandRandomTable = new Table(n * numberOfCycles, 3);
 		Random random = new Random();
 
 		for (int i = 0; i < numberOfCycles * n; i++) {
-			float x = (float) (0.001 + random.nextFloat() * (1 - 0.001));
+			double x = (double) (0.001 + random.nextDouble() * (1 - 0.001));
 			int randomValue = Range.getRangeProbability(demandRange, x);
 			demandRandomTable.setValue(i, 0, i + 1 + "");
 			demandRandomTable.setValue(i, 1, x + "");
@@ -159,7 +181,7 @@ public class Main {
 		Table leadRandomTable = new Table(numberOfCycles, 3);
 
 		for (int i = 0; i < numberOfCycles; i++) {
-			float x = (float) (0.001 + random.nextFloat() * (1 - 0.001));
+			double x = (double) (0.001 + random.nextDouble() * (1 - 0.001));
 			int randomValue = Range.getRangeProbability(leadRange, x) + 1;
 			leadRandomTable.setValue(i, 0, i + 1 + "");
 			leadRandomTable.setValue(i, 1, x + "");
@@ -185,9 +207,8 @@ public class Main {
 		//This queue of orders keeps track of the orders sent for cars
 		//The assumption is that you cannot order cars before 
 		//the current order arrives
-		ArrayList<Orders> orders = new ArrayList<Orders>();
-		orders.add(new Orders(orderSize, 2));
-		int currentOrderIndex = 0;
+		
+		
 		int k = 1;
 		for (int i = 0; i < numberOfCycles; i++) {
 
@@ -203,38 +224,18 @@ public class Main {
 				//This parts doesn't work well
 				//Beginning Inventory
 				////////////////////////////////
-	
-				SimulationTableRecord previousRecord = record1.get(k - 1);
-				if (daysToNextOrder!='-')
+				if(daysToNextOrder!=0)
 				{
-					daysToNextOrder--;
-				}
-				if(daysToNextOrder=='-' && previousRecord.getDaysToArrival()=='-')
-				{
-					daysToNextOrder=orders.get(currentOrderIndex).leadDays;
-					record.setOrderQuantity(orders.get(currentOrderIndex).orderSize);
-				}
-				if (daysToNextOrder == 0) {
-					if((previousRecord.getEndingInventory() + orders.get(currentOrderIndex).orderSize)>=12)
-					{
-						record.setBeginningInventory(12);	
-					}
-					else
-					{
-						record.setBeginningInventory(previousRecord.getEndingInventory() + orders.get(currentOrderIndex).orderSize);
-					}
-					currentOrderIndex++;
-					record.setDaysToArrival('-');
-					daysToNextOrder='-';
-				} else if (daysToNextOrder != '-') {
-					record.setBeginningInventory(previousRecord.getEndingInventory());
-					record.setDaysToArrival(daysToNextOrder);
-				} else {
 					
-					record.setBeginningInventory(previousRecord.getEndingInventory());
-					record.setDaysToArrival('-');
+					record.setDaysToArrival(--daysToNextOrder);
 				}
-				
+				SimulationTableRecord previousRecord = record1.get(k - 1);
+				record.setBeginningInventory(previousRecord.getEndingInventory());
+				if(daysToNextOrder==0)
+				{
+					record.setBeginningInventory(record.getBeginningInventory()+orderSize);
+					orderSize=0;
+				}
 				
 				////////////////////////////////
 				//This parts works well
@@ -254,21 +255,23 @@ public class Main {
 					record.setShortageQuatity(0);
 				}
 				
+				if(record.getCycle()>previousRecord.getCycle() &&
+						orderSize==0 && record.getEndingInventory()<=minimumVehicle)
+				{
+					orderSize=12-record.getEndingInventory();
+					daysToNextOrder=Integer.parseInt(leadRandomTable.getCell(i, 2));
+					record.setOrderQuantity(orderSize);
+					record.setDaysToArrival(daysToNextOrder);
+				}
+				
 				////////////////////////////////
 				////////////////////////////////
 				
-				if(currentOrderIndex==(orders.size()-1) && daysToNextOrder=='-')
-				{
-					record.setDaysToArrival(orders.get(currentOrderIndex).leadDays+1);
-					record.setOrderQuantity(orders.get(currentOrderIndex).orderSize);
-					daysToNextOrder=record.getDaysToArrival();
-					
-				}
+				
 				
 				k++;
 				record1.add(record);
 			}
-			orders.add(new Orders(12-record.getEndingInventory(),Integer.parseInt(leadRandomTable.getCell(i, 2)) ));
 		}
 
 		Table storageSim = SimulationTableRecord.getTableRepresentation(n * numberOfCycles, record1);
