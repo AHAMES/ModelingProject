@@ -86,9 +86,9 @@ public class Main {
 			// Showing the result in a JFrame
 
 			
-			 JFrame interArrivalFrame = new JFrame(); interArrivalFrame.setSize(500, 500);
+			 /*JFrame interArrivalFrame = new JFrame(); interArrivalFrame.setSize(500, 500);
 			 interArrivalFrame.add(interArrivalTable.table);
-			 interArrivalFrame.setVisible(true);
+			 interArrivalFrame.setVisible(true);*/
 			 
 
 			//////////////////////////////////////////////////////

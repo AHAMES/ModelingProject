@@ -156,9 +156,34 @@ public class SimulationTableRecord {
 			simulation.setValue(i, 7, ""+records.get(i).daysToArrival);
 			
 		}
-		
-		
 		return simulation;
+	}
+	
+	public static Answer getAnswers(ArrayList<SimulationTableRecord> record1)
+	{
+		double showRoom = 0;
+		double storage = 0;
+		int shortage = 0;
+		for(int i = 0; i<record1.size(); i++)
+		{
+			int totalStorage=record1.get(i).endingInventory;
+			
+			if(totalStorage>=4)
+			{
+				showRoom += 4;
+				storage += totalStorage - 4;
+			}
+			else
+			{
+				showRoom += totalStorage;
+			}
+			
+			if(record1.get(i).shortageQuatity > 0)
+			{
+				shortage+=1;
+			}
+		}
+		return new Answer(showRoom/record1.size(),storage/record1.size(),shortage);
 	}
 
 }
