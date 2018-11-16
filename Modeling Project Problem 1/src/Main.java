@@ -7,7 +7,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
-import org.omg.PortableInterceptor.IORInterceptor;
 
 public class Main {
 
@@ -16,8 +15,10 @@ public class Main {
 		ArrayList<Answer> answers = new ArrayList<Answer>();
 		ArrayList<JTabbedPane> details = new ArrayList<>();
 		ArrayList<TheoreticalAnswer> theoreticalAnswers = new ArrayList<>();
+		
 		int numberOfRuns = Integer.parseInt(JOptionPane.showInputDialog("Input Number of Runs"));
 		int numberOfCustomers = Integer.parseInt(JOptionPane.showInputDialog("Number of Customers"));
+		
 		for (int l = 0; l < numberOfRuns; l++) {// If float problem happens
 
 			// Initializing given probability tables

@@ -21,12 +21,22 @@ public class Main {
 		// will I still ignore it and wait?
 
 		// Minimum number in storage after which we must order a new shipment
+
 		ArrayList<Answer> answers = new ArrayList<Answer>();
 		ArrayList<JScrollPane> details = new ArrayList<>();
+		ArrayList<TheoreticalAnswer> theoreticalAnswers = new ArrayList<>();
+
 		int minimumVehicle = Integer.parseInt(JOptionPane.showInputDialog("Input Minimum Vehicles"));
 		int n = Integer.parseInt(JOptionPane.showInputDialog("Input N"));
 		int numberOfCycles = Integer.parseInt(JOptionPane.showInputDialog("Input number of Cycles"));
 		int numberOfRuns = Integer.parseInt(JOptionPane.showInputDialog("Input Number of Runs"));
+		 
+		
+		/*int minimumVehicle = 4;
+		int n = 2;
+		int numberOfCycles = 50;
+		int numberOfRuns = 100;*/
+		
 		for (int l = 0; l < numberOfRuns; l++) {
 			// Initializing given probability tables
 			double[] DemandProbabilityList = new double[5];
@@ -146,10 +156,10 @@ public class Main {
 			}
 			// Showing the result in a JFrame
 
-			/*JFrame leadFrame = new JFrame("Service Probability");
-			leadFrame.setSize(500, 500);
-			leadFrame.add(leadTable.table);
-			leadFrame.setVisible(true);*/
+			/*
+			 * JFrame leadFrame = new JFrame("Service Probability"); leadFrame.setSize(500,
+			 * 500); leadFrame.add(leadTable.table); leadFrame.setVisible(true);
+			 */
 
 			//////////////////////////////////////////////////////
 
@@ -210,6 +220,8 @@ public class Main {
 			// the current order arrives
 
 			int k = 1;
+			double[] leadCreated = { 0, 1, 0 };
+			int numberOfTimesOrdered = 1;
 			for (int i = 0; i < numberOfCycles; i++) {
 
 				for (int j = 0; j < n; j++) {
@@ -258,6 +270,8 @@ public class Main {
 						daysToNextOrder = Integer.parseInt(leadRandomTable.getCell(i, 2));
 						record.setOrderQuantity(orderSize);
 						record.setDaysToArrival(daysToNextOrder);
+						leadCreated[daysToNextOrder-1]++;
+						numberOfTimesOrdered++;
 					}
 
 					////////////////////////////////
@@ -268,36 +282,41 @@ public class Main {
 				}
 			}
 			answers.add(SimulationTableRecord.getAnswers(record1));
+			
 			Table storageSim = SimulationTableRecord.getTableRepresentation(n * numberOfCycles, record1);
 			String headers3[] = { "Cycle", "Day", "Beginning Inventory", "Demand", "Ending Inventory",
 					"Shortage Quatity", "Order Quantity", "Days To Arrival" };
+			
 			storageSim.setTitles(headers3);
 			details.add(new JScrollPane(storageSim.table));
-			/*JFrame resultsFrame = new JFrame("Results Table");
-			resultsFrame.setSize(900, 500);
-			resultsFrame.add(new JScrollPane(storageSim.table));
-			resultsFrame.setVisible(true);*/
+			theoreticalAnswers.add(TheoreticalAnswer.getTheoreticalAnswer(demandRandomTable,
+					leadRandomTable,leadCreated,numberOfTimesOrdered));
+			/*
+			 * JFrame resultsFrame = new JFrame("Results Table"); resultsFrame.setSize(900,
+			 * 500); resultsFrame.add(new JScrollPane(storageSim.table));
+			 * resultsFrame.setVisible(true);
+			 */
 		}
 		Table answerTable = Answer.getTableRepresentation(numberOfRuns, answers);
 		JTabbedPane finalPanel = new JTabbedPane();
 		JTabbedPane detailsPanel = new JTabbedPane();
-		
+
 		for (int i = 0; i < numberOfRuns; i++) {
 			detailsPanel.add("Run " + (i + 1), details.get(i));
 		}
-		String answersHeaders[] = { "Run ID", "Showroom Avg", "Storage Avg", "Shortage Number"};
-		
+		String answersHeaders[] = { "Run ID", "Showroom Avg", "Storage Avg", "Shortage Number" };
+
 		answerTable.setTitles(answersHeaders);
 		JFrame finalFrame = new JFrame("Results");
-		
-		String finalAnswersHeaders[] = { "Showroom Avg", "Storage Avg", "Shortage Number"};
+
+		String finalAnswersHeaders[] = { "Showroom Avg", "Storage Avg", "Shortage Number" };
 		Table finalTable = Answer.getAverageOfAllRuns(numberOfRuns, answers);
 		finalTable.setTitles(finalAnswersHeaders);
-		
+
 		finalPanel.addTab("Run Results", new JScrollPane(answerTable.table));
 		finalPanel.addTab("Details", new JScrollPane(detailsPanel));
 		finalPanel.addTab("Final Answer", new JScrollPane(finalTable.table));
-
+		finalPanel.add("Real Probability Distribution", TheoreticalAnswer.getDistributions(theoreticalAnswers));
 		finalFrame.add(finalPanel);
 		finalFrame.setSize(1000, 500);
 		finalFrame.setVisible(true);
