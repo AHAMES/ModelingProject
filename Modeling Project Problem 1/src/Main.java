@@ -7,12 +7,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
+import org.omg.PortableInterceptor.IORInterceptor;
+
 public class Main {
 
 	public static void main(String args[]) {
 
 		ArrayList<Answer> answers = new ArrayList<Answer>();
 		ArrayList<JTabbedPane> details = new ArrayList<>();
+		ArrayList<TheoreticalAnswer> theoreticalAnswers = new ArrayList<>();
 		int numberOfRuns = Integer.parseInt(JOptionPane.showInputDialog("Input Number of Runs"));
 		int numberOfCustomers = Integer.parseInt(JOptionPane.showInputDialog("Number of Customers"));
 		for (int l = 0; l < numberOfRuns; l++) {// If float problem happens
@@ -202,11 +205,8 @@ public class Main {
 				int CurrentArrivalTime = arrivalTime + interArrivalTime;
 
 				while (carQueue.isEmpty() == false && carQueue.getFirst() <= CurrentArrivalTime) {
-
 					carQueue.removeFirst();
-
 				}
-
 				record.setCustomerNumber(k + 1);
 				record.setInterArrivalTime(interArrivalTime);
 				record.setServiceTime(Integer.parseInt(serviceTimeRandomTable.getCell(k, 2)));
@@ -280,7 +280,8 @@ public class Main {
 			panel.addTab("In Bank", new JScrollPane(inBankSim.table));
 			panel.addTab("Combined", new JScrollPane(totalSim.table));
 			details.add(panel);
-
+			theoreticalAnswers.add(TheoreticalAnswer.getTheoreticalAnswer(numberOfCustomers, interArrivalRandomTable,
+				serviceTimeRandomTable));
 			//Storing the Answer object of this run in an ArrayList
 			answers.add(answer);
 		}
@@ -310,10 +311,9 @@ public class Main {
 		finalPanel.addTab("Run Results", new JScrollPane(answerTable.table));
 		finalPanel.addTab("Details", new JScrollPane(detailsPanel));
 		finalPanel.addTab("Final Answer", new JScrollPane(finalTable.table));
-
+		finalPanel.add("Real Probability Distribution", TheoreticalAnswer.getDistributions(theoreticalAnswers));
 		finalFrame.add(finalPanel);
 		finalFrame.setSize(1000, 500);
 		finalFrame.setVisible(true);
 	}
-
 }

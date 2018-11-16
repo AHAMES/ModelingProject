@@ -31,7 +31,6 @@ public class Table {
 	public void setValue(int row, int column, String value) {
 		model.setValueAt(value, row, column);
 	}
-	
 	public String getCell(int row,int column)
 	{
 		Object x= model.getValueAt(row, column);
