@@ -17,15 +17,19 @@ public class TheoreticalAnswer {
 
 	public static TheoreticalAnswer getTheoreticalAnswer(int numberOfCustomers, Table interArrivalRandomTable,
 			Table serviceTimeRandomTable) {
-		TheoreticalAnswer TA=new TheoreticalAnswer();
+		TheoreticalAnswer TA = new TheoreticalAnswer();
 		for (int k = 0; k < numberOfCustomers; k++) {
-			if(interArrivalRandomTable.getCell(k, 1)!="-")
+			if (interArrivalRandomTable.getCell(k, 1) == "-") {
+				TA.interArrivalDistribution[0]++;
+			}
+			else
 			{
 				int IA = Integer.parseInt(interArrivalRandomTable.getCell(k, 2));
-				int ST = Integer.parseInt(serviceTimeRandomTable.getCell(k, 2));
 				TA.interArrivalDistribution[IA]++;
-				TA.serviceTimeDistribution[ST - 1]++;
 			}
+
+			int ST = Integer.parseInt(serviceTimeRandomTable.getCell(k, 2));
+			TA.serviceTimeDistribution[ST - 1]++;
 		}
 		for (int i = 0; i < TA.interArrivalDistribution.length; i++) {
 			TA.interArrivalDistribution[i] = TA.interArrivalDistribution[i] / numberOfCustomers;
@@ -52,10 +56,10 @@ public class TheoreticalAnswer {
 				x.interArrivalDistribution[i] += answers.get(k).interArrivalDistribution[i];
 			}
 		}
-		DecimalFormat df=new DecimalFormat();
+		DecimalFormat df = new DecimalFormat();
 		df.setMaximumFractionDigits(2);
 		for (int i = 0; i < 4; i++) {
-		
+
 			table1.setValue(i, 0, (i + 1) + "");
 			table1.setValue(i, 1, df.format(x.serviceTimeDistribution[i] / answers.size()));
 		}
