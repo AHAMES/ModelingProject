@@ -22,8 +22,13 @@ public class Main {
 
 		// Minimum number in storage after which we must order a new shipment
 
+		
+		//ArrayList that stores the answers to the questions 
 		ArrayList<Answer> answers = new ArrayList<Answer>();
+		//ArrayList that stores a table of a single run
 		ArrayList<JScrollPane> details = new ArrayList<>();
+		//ArrayList that stores the practical probability distribution
+		//(Named theoretical for initial confusing reasons, the name stuck)
 		ArrayList<TheoreticalAnswer> theoreticalAnswers = new ArrayList<>();
 
 		int minimumVehicle = Integer.parseInt(JOptionPane.showInputDialog("Input Minimum Vehicles"));
@@ -113,10 +118,10 @@ public class Main {
 			//////////////////////////////////////////////////////
 
 			//////////////////////////////////////////////////////
-			//////////// Service time table building/////////
+			//////////// lead time table building/////////
 			//////////////////////////////////////////////////////
 
-			// Service time Probability Range
+			// lead time Probability Range
 			Range[] leadRange = new Range[3];
 			leadRange[0] = new Range();
 
@@ -124,13 +129,14 @@ public class Main {
 			leadRange[0].first = cumulativeLeadProbability;
 			leadRange[0].second = LeadTimeList[0];
 
-			// Initializing the inter-arrival probability table
+			// Initializing the lead probability table
 			// First record is done manually
 			Table leadTable = new Table(length2, 4);
 
 			// Adding header to table
 			String headers2[] = { "Lead", "Probability", "Cumulative Probability", "Range" };
 
+			//
 			leadTable.setTitles(headers2);
 			leadTable.setValue(0, 0, 1 + "");
 			leadTable.setValue(0, 1, LeadTimeList[0] + "");
@@ -157,14 +163,14 @@ public class Main {
 			// Showing the result in a JFrame
 
 			/*
-			 * JFrame leadFrame = new JFrame("Service Probability"); leadFrame.setSize(500,
+			 * JFrame leadFrame = new JFrame("Lead Probability"); leadFrame.setSize(500,
 			 * 500); leadFrame.add(leadTable.table); leadFrame.setVisible(true);
 			 */
 
 			//////////////////////////////////////////////////////
 
 			//////////////////////////////////////////////////////
-			/// Random values in the table
+			/// Random values in the demand table
 			//////////////////////////////////////////////////////
 
 			int carsInStorage = 6;
@@ -173,7 +179,7 @@ public class Main {
 			int daysToNextOrder = 2;
 			Table demandRandomTable = new Table(n * numberOfCycles, 3);
 			Random random = new Random();
-
+			// assign the random demand numbers for each
 			for (int i = 0; i < numberOfCycles * n; i++) {
 				double x = (double) (0.001 + random.nextDouble() * (1 - 0.001));
 				int randomValue = Range.getRangeProbability(demandRange, x);
@@ -189,7 +195,10 @@ public class Main {
 			 * randomDemandFrame.setVisible(true);
 			 */
 
+			//Assign the random lead time numbers for each cycle
 			Table leadRandomTable = new Table(numberOfCycles, 3);
+			
+			//First record is done manually because of the requirement to start with lead time 2
 			leadRandomTable.setValue(0, 0, 1 + "");
 			leadRandomTable.setValue(0, 1, "");
 			leadRandomTable.setValue(0, 2, 2+"");
@@ -206,11 +215,7 @@ public class Main {
 			 * randomLeadFrame.add(leadRandomTable.table); randomLeadFrame.setVisible(true);
 			 */
 
-			// Assume that the minimum is 3 cars because there is already an order for 5
-			// when the inventory amount is 2, meaning that the minimum is either 2 or 3
-			// 3 Sounds the most safe choice
-			// Assume the number of cycles is 10 because it is unclear in the requirements
-
+			//ArrayList that contains the records in the run
 			ArrayList<SimulationTableRecord> record1 = new ArrayList<SimulationTableRecord>();
 			int firstDemand = Integer.parseInt(demandRandomTable.getCell(0, 2));
 			SimulationTableRecord record = new SimulationTableRecord(1, 1, carsInStorage, firstDemand,
@@ -222,66 +227,92 @@ public class Main {
 			// the current order arrives
 
 			int k = 1;
+			//Values used for the practical distribution
 			double[] leadCreated = { 0, 1, 0 };
 			double[] leadFromTable = { 0, 0, 0 };
 			double[] demandFromTable = { 0, 0, 0, 0, 0};
 			int numberOfTimesOrdered = 1;
 			for (int i = 0; i < numberOfCycles; i++) {
 				
+				//increase the number of lead From table at each cycle
+				//to calculate the practical distribution at each cycle 
+				//(assuming that we always order each cycle no matter what)
 					int currentLead=Integer.parseInt(leadRandomTable.getCell(i, 2));
 					leadFromTable[currentLead-1]++;
 				
 				for (int j = 0; j < n; j++) {
 
 					record = new SimulationTableRecord();
+					
+					//First record is added manually
+					//Ignore first run 
 					if (i == 0 && j == 0) {
+						
+						//Increase the demand number at the first day
 						int currentDemand = Integer.parseInt(demandRandomTable.getCell(k, 2));
 						demandFromTable[currentDemand]++;
 						continue;
 						
 					}
+					//add to the day and cycle
+					//cycle changes depending on outer loop with i
+					//day change in this loop with j
 					record.setCycle(i + 1);
 					record.setDay(j + 1);
 				
-					////////////////////////////////
-					// This parts doesn't work well
-					// Beginning Inventory
-					////////////////////////////////
+					//Decrement the days to the next order until it is = 0
 					if (daysToNextOrder != 0) {
-
+						
 						record.setDaysToArrival(--daysToNextOrder);
 					}
+					//The current record's beginning inventory= previous ending inventory (no matter what)
 					SimulationTableRecord previousRecord = record1.get(k - 1);
 					record.setBeginningInventory(previousRecord.getEndingInventory());
+					
+					//When the dayToNextOrder=0, increase the beginningInventory with the order size
+					//set orderSize=0 to avoid repeating the order afterwards
 					if (daysToNextOrder == 0) {
 						record.setBeginningInventory(record.getBeginningInventory() + orderSize);
 						orderSize = 0;
 					}
 
-					////////////////////////////////
-					// This parts works well
-					// Ending Inventory and demand
-					////////////////////////////////
-
-					int currentDemand = Integer.parseInt(demandRandomTable.getCell(k, 2));
-					record.setDemand(currentDemand);
+					
+					//Increase the demand number at the each day
+					int currentDemand = Integer.parseInt(demandRandomTable.getCell(k, 2));	
 					demandFromTable[currentDemand]++;
 					
+					//add the demand each day
+					record.setDemand(currentDemand);
+				
+					//If the current inventory does have enough cars
+					//set the inventory to 0 and record the shortage
 					if ((record.getBeginningInventory() - currentDemand) < 0) {
 						record.setEndingInventory(0);
 						record.setShortageQuatity(Math.abs(record.getBeginningInventory() - currentDemand)
 								+ previousRecord.getShortageQuatity());
-					} else {
+					}
+					//Otherwise decrease the current inventory and add it to the ending inventory
+					//and make shortage = 0
+					else {
 						record.setEndingInventory(record.getBeginningInventory() - currentDemand);
 						record.setShortageQuatity(0);
 					}
 
+					//if at the end of the cycle (j==n-1)
+					//and no orders currently available (orderSize==0)
+					//and the ending inventory at this run is less then the minimum
+					
 					if (j==n-1 && orderSize == 0
 							&& record.getEndingInventory() <= minimumVehicle) {
+						//make a new order where orderSize=12-currentEndingInventory
 						orderSize = 12 - record.getEndingInventory();
+						//Set day to arrival = lead time from the table
 						daysToNextOrder = Integer.parseInt(leadRandomTable.getCell(i, 2));
+						//put the order size in record
 						record.setOrderQuantity(orderSize);
+						//put the day to arrival in record
 						record.setDaysToArrival(daysToNextOrder);
+						//Increase the lead number at time a new order is made
 						leadCreated[daysToNextOrder-1]++;
 						numberOfTimesOrdered++;
 						
@@ -289,11 +320,12 @@ public class Main {
 
 					////////////////////////////////
 					////////////////////////////////
-
+					//Add the record to the arrayList in the run
 					k++;
 					record1.add(record);
 				}
 			}
+			//Add the answers from the record to the arrayList in the run
 			answers.add(SimulationTableRecord.getAnswers(record1));
 			
 			Table storageSim = SimulationTableRecord.getTableRepresentation(n * numberOfCycles, record1);
@@ -301,7 +333,9 @@ public class Main {
 					"Shortage Quatity", "Order Quantity", "Days To Arrival" };
 			
 			storageSim.setTitles(headers3);
+			//Store the record as a table in JScrollPane
 			details.add(new JScrollPane(storageSim.table));
+			//Save practical distribution for this run
 			theoreticalAnswers.add(TheoreticalAnswer.getTheoreticalAnswer(leadFromTable,demandFromTable
 					,leadCreated,numberOfTimesOrdered,n,numberOfCycles));
 			/*
@@ -310,26 +344,40 @@ public class Main {
 			 * resultsFrame.setVisible(true);
 			 */
 		}
+		
+		//The following code is dedicated to the GUI
+		
+		
+		//Table containing all the answers
 		Table answerTable = Answer.getTableRepresentation(numberOfRuns, answers);
+		//Tabbed Pane to contain the runs, answers, practical answers and final answers
 		JTabbedPane finalPanel = new JTabbedPane();
+		//Tabbed pane that contains the runs
 		JTabbedPane detailsPanel = new JTabbedPane();
 
+		
+		//adding runs to the detail Tabbed Pane
 		for (int i = 0; i < numberOfRuns; i++) {
 			detailsPanel.add("Run " + (i + 1), details.get(i));
 		}
 		String answersHeaders[] = { "Run ID", "Showroom Avg", "Storage Avg", "Shortage Number" };
 
 		answerTable.setTitles(answersHeaders);
+		//JFrame that contains all the results
 		JFrame finalFrame = new JFrame("Results");
 
 		String finalAnswersHeaders[] = { "Showroom Avg", "Storage Avg", "Shortage Number" };
+		
+		//Getting the final answer table
 		Table finalTable = Answer.getAverageOfAllRuns(numberOfRuns, answers);
 		finalTable.setTitles(finalAnswersHeaders);
 
+		//Adding all the tabs to the tabbed Pane
 		finalPanel.addTab("Run Results", new JScrollPane(answerTable.table));
 		finalPanel.addTab("Details", new JScrollPane(detailsPanel));
 		finalPanel.addTab("Final Answer", new JScrollPane(finalTable.table));
 		finalPanel.add("Real Probability Distribution", TheoreticalAnswer.getDistributions(theoreticalAnswers));
+		//Adding the tabbed pane to the Frame, showing all the results
 		finalFrame.add(finalPanel);
 		finalFrame.setSize(1000, 500);
 		finalFrame.setVisible(true);

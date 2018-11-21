@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 
 public class Answer {
+	
+	//This class contains the requested calculations in the problem
 	double driveInServiceAvg;
 	double driveInWaitAvg;
 	double inBankServiceAvg;
@@ -41,6 +43,9 @@ public class Answer {
 		return simulation;
 	}
 
+	
+	// the returns the averages of all averages in a table form
+	// made like that for no real reason
 	public static Table getAverageOfAllRuns(int numberOfRuns, ArrayList<Answer> records) {
 		Table simulation = new Table(numberOfRuns, 7);
 

@@ -3,7 +3,11 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
 public class Table {
-
+	
+	//A class created to simplify the table design
+	//Automates the creation of tables in a  convenient manner
+		
+		
 	JTable table;
 	DefaultTableModel model;
 

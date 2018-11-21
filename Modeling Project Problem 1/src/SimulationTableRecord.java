@@ -2,6 +2,8 @@ import java.util.ArrayList;
 
 public class SimulationTableRecord {
 
+	//This object is used to create a record in a table
+	//Contains the components of a table
 	private int customerNumber;
 	private int interArrivalTime;
 	private int arrivalTime;

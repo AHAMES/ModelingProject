@@ -7,6 +7,9 @@ import javax.swing.JTabbedPane;
 
 public class TheoreticalAnswer {
 
+	//This class contains the practical distributions
+	//requested in the problem
+	
 	double[] serviceTimeDistribution;
 	double[] interArrivalDistribution;
 
@@ -15,6 +18,9 @@ public class TheoreticalAnswer {
 		interArrivalDistribution = new double[6];
 	}
 
+	//Returns the practical answer of this problem
+	//The method used here is different from problem 2 after reconsideration
+	//As this was the original implementation for both
 	public static TheoreticalAnswer getTheoreticalAnswer(int numberOfCustomers, Table interArrivalRandomTable,
 			Table serviceTimeRandomTable) {
 		TheoreticalAnswer TA = new TheoreticalAnswer();
@@ -40,7 +46,7 @@ public class TheoreticalAnswer {
 		}
 		return TA;
 	}
-
+	//Calculate the average of all the distributions
 	public static JTabbedPane getDistributions(ArrayList<TheoreticalAnswer> answers) {
 		Table table1 = new Table(4, 2);
 		Table table2 = new Table(6, 2);

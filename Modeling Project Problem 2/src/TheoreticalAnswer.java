@@ -7,8 +7,12 @@ import javax.swing.JTabbedPane;
 
 public class TheoreticalAnswer {
 
+	//This class contains the practical distributions
+	//requested in the problem
 	double[] leadDistribution;
 	double[] demandDistribution;
+	
+	//This is an extra distribution assuming the number of time we actually made an order
 	double[] realLeadDistribution;
 
 	public TheoreticalAnswer() {
@@ -17,6 +21,9 @@ public class TheoreticalAnswer {
 		realLeadDistribution = new double[3];
 	}
 
+	//Returns the practical answer of this problem
+	//The method used here is different from problem 1 after reconsideration
+	//caused by wrong calculations, the problem 1 works so it was kept in the original way
 	public static TheoreticalAnswer getTheoreticalAnswer(double [] leadFromTable, double [] demandFromTable,
 			double[] realLead, int numberOfTimesOrdered,double N, double numberOfCycles) {
 		TheoreticalAnswer TA = new TheoreticalAnswer();
@@ -39,6 +46,8 @@ public class TheoreticalAnswer {
 		return TA;
 	}
 
+	
+	//Calculate the average of all the distributions
 	public static JTabbedPane getDistributions(ArrayList<TheoreticalAnswer> answers) {
 		Table table1 = new Table(3, 2);
 		Table table2 = new Table(5, 2);
