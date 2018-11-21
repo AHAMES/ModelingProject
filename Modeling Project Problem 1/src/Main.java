@@ -4,8 +4,17 @@ import java.util.LinkedList;
 import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.general.PieDataset;
 
 
 public class Main {
@@ -19,6 +28,17 @@ public class Main {
 		int numberOfRuns = Integer.parseInt(JOptionPane.showInputDialog("Input Number of Runs"));
 		int numberOfCustomers = Integer.parseInt(JOptionPane.showInputDialog("Number of Customers"));
 		
+		int queueLength = Integer.parseInt(JOptionPane.showInputDialog("Length of the Drive in Queue"));
+		
+		//Values used in charts
+		int averageInBank=0;
+		int averageDriveIn=0;
+		int waitingBank=0;
+		int waitingDrive=0;
+		int idleBankTime=0;
+		int idleDriveTime=0;
+		int BankTimeSpent=0;
+		int DriveTimeSpent=0;
 		for (int l = 0; l < numberOfRuns; l++) {// If float problem happens
 
 			// Initializing given probability tables
@@ -213,7 +233,7 @@ public class Main {
 				record.setServiceTime(Integer.parseInt(serviceTimeRandomTable.getCell(k, 2)));
 				record.setArrivalTime(CurrentArrivalTime);
 				arrivalTime = record.getArrivalTime();
-				if (carQueue.size() < 2) {
+				if (carQueue.size() < queueLength) {
 
 					// time Service begins condition, if not busy start at once
 					if (record1.get(i - 1).getTimeServiceEnds() <= record.getArrivalTime()) {
@@ -230,6 +250,9 @@ public class Main {
 					record.setWhichQueue("Drive");
 					record1.add(record);
 					carQueue.add(record.getTimeServiceEnds());
+					waitingDrive+=record1.get(i).getWaitingTimeInQueue();
+					idleDriveTime+=record1.get(i).getServerIdleTime();
+					DriveTimeSpent+=record1.get(i).getTimeSpentInSystem();
 					i++;
 				} else {
 					// Same code as the second else, i made it like that for the lack of proper goto
@@ -248,8 +271,12 @@ public class Main {
 
 					record.setWhichQueue("Bank");
 					record2.add(record);
+					waitingBank+=record2.get(j).getWaitingTimeInQueue();
+					idleBankTime+=record2.get(j).getServerIdleTime();
+					BankTimeSpent+=record2.get(j).getTimeSpentInSystem();
 					j++;
 				}
+				
 				recordTotal.add(record);
 			}
 			// Table for the drive in Teller
@@ -284,6 +311,8 @@ public class Main {
 			theoreticalAnswers.add(TheoreticalAnswer.getTheoreticalAnswer(numberOfCustomers, interArrivalRandomTable,
 				serviceTimeRandomTable));
 			//Storing the Answer object of this run in an ArrayList
+			averageDriveIn+=record1.size();
+			averageInBank+=record2.size();
 			answers.add(answer);
 		}
 		
@@ -293,6 +322,24 @@ public class Main {
 		//Details tabbed panel
 		//Fill with the tabbed Panel
 		
+		DefaultCategoryDataset dataset1 = new DefaultCategoryDataset( );  
+		dataset1.addValue(waitingBank/numberOfRuns, "Bank", "Waiting Time");
+		dataset1.addValue(waitingDrive/numberOfRuns, "Drive", "Waiting Time");
+		dataset1.addValue(idleBankTime/numberOfRuns, "Bank", "Idle Time");
+		dataset1.addValue(idleDriveTime/numberOfRuns, "Drive", "Idle Time");
+		dataset1.addValue(BankTimeSpent/numberOfRuns, "Bank", "Time Spent");
+		dataset1.addValue(DriveTimeSpent/numberOfRuns, "Drive", "Time Spent");
+		
+		averageInBank = averageInBank/(numberOfRuns);
+		averageDriveIn = averageDriveIn/(numberOfRuns);
+		DefaultPieDataset dataset2 = new DefaultPieDataset();
+		dataset2.setValue("Number of People Going to Bank", averageInBank);
+		dataset2.setValue("Number of People Going to Drive In", averageDriveIn);
+		JFreeChart pieChart1 = ChartFactory.createPieChart("Average People In service",  
+		         dataset2,true,true, false);
+		JFreeChart barChart=ChartFactory.createBarChart("Teller Stats","Category" ,"Time", dataset1, PlotOrientation.VERTICAL, true, true, false);
+		
+		JTabbedPane charts=new JTabbedPane();
 		JTabbedPane detailsPanel = new JTabbedPane();
 		for (int i = 0; i < numberOfRuns; i++) {
 			detailsPanel.add("Run " + (i + 1), details.get(i));
@@ -306,6 +353,10 @@ public class Main {
 		
 		String finalAnswersHeaders[] = { "Drive In Serv Avg", "Drive In Wait Avg", "In Bank Serv Avg",
 				"In Bank Wait Avg", "Probability Bank Waiting", "Probability Bank Idle", "Maximum Queue Length" };
+		
+
+		charts.add("Average of Users of System", new ChartPanel(pieChart1));
+		charts.add("Teller Stats",new ChartPanel(barChart));
 		Table finalTable = Answer.getAverageOfAllRuns(numberOfRuns, answers);
 		finalTable.setTitles(finalAnswersHeaders);
 		
@@ -313,6 +364,7 @@ public class Main {
 		finalPanel.addTab("Details", new JScrollPane(detailsPanel));
 		finalPanel.addTab("Final Answer", new JScrollPane(finalTable.table));
 		finalPanel.add("Real Probability Distribution", TheoreticalAnswer.getDistributions(theoreticalAnswers));
+		finalPanel.add("Charts", charts);
 		finalFrame.add(finalPanel);
 		finalFrame.setSize(1000, 500);
 		finalFrame.setVisible(true);
