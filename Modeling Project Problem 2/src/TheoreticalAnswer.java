@@ -17,26 +17,20 @@ public class TheoreticalAnswer {
 		realLeadDistribution = new double[3];
 	}
 
-	public static TheoreticalAnswer getTheoreticalAnswer(Table demandRandomTable, Table leadRandomTable,
-			double[] realLead, int numberOfTimesOrdered) {
+	public static TheoreticalAnswer getTheoreticalAnswer(double [] leadFromTable, double [] demandFromTable,
+			double[] realLead, int numberOfTimesOrdered,double N, double numberOfCycles) {
 		TheoreticalAnswer TA = new TheoreticalAnswer();
-		TA.leadDistribution[1]++;
-		for (int k = 0; k < demandRandomTable.table.getRowCount(); k++) {
-			int IA = Integer.parseInt(demandRandomTable.getCell(k, 2));
-			TA.demandDistribution[IA]++;
-		}
-		for (int k = 1; k < leadRandomTable.table.getRowCount(); k++) {
-			int ST = Integer.parseInt(leadRandomTable.getCell(k, 2));
-			TA.leadDistribution[ST - 1]++;
-		}
+	
 		TA.realLeadDistribution = realLead.clone();
+		TA.demandDistribution = demandFromTable.clone();
+		TA.leadDistribution = leadFromTable.clone();
 		
-		for (int i = 0; i < TA.demandDistribution.length; i++) {
-			TA.demandDistribution[i] = TA.demandDistribution[i] / demandRandomTable.table.getRowCount();
+		for (int i = 0; i < 5; i++) {
+			TA.demandDistribution[i] = TA.demandDistribution[i] / (N*numberOfCycles);
 		}
 
-		for (int i = 0; i < TA.leadDistribution.length; i++) {
-			TA.leadDistribution[i] = TA.leadDistribution[i] / leadRandomTable.table.getRowCount();
+		for (int i = 0; i < 3; i++) {
+			TA.leadDistribution[i] = TA.leadDistribution[i] / numberOfCycles;
 		}
 		for (int i = 0; i < 3; i++) {
 			TA.realLeadDistribution[i] = realLead[i] / numberOfTimesOrdered;
@@ -52,7 +46,8 @@ public class TheoreticalAnswer {
 		TheoreticalAnswer x = new TheoreticalAnswer();
 		x.demandDistribution = answers.get(0).demandDistribution.clone();
 		x.leadDistribution = answers.get(0).leadDistribution.clone();
-		for (int k = 0; k < answers.size(); k++) {
+		x.realLeadDistribution = answers.get(0).realLeadDistribution.clone();
+		for (int k = 1; k < answers.size(); k++) {
 			for (int i = 0; i < 3; i++) {
 				x.leadDistribution[i] += answers.get(k).leadDistribution[i];
 				x.realLeadDistribution[i] += answers.get(k).realLeadDistribution[i];

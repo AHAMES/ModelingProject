@@ -190,8 +190,10 @@ public class Main {
 			 */
 
 			Table leadRandomTable = new Table(numberOfCycles, 3);
-
-			for (int i = 0; i < numberOfCycles; i++) {
+			leadRandomTable.setValue(0, 0, 1 + "");
+			leadRandomTable.setValue(0, 1, "");
+			leadRandomTable.setValue(0, 2, 2+"");
+			for (int i = 1; i < numberOfCycles; i++) {
 				double x = (double) (0.001 + random.nextDouble() * (1 - 0.001));
 				int randomValue = Range.getRangeProbability(leadRange, x) + 1;
 				leadRandomTable.setValue(i, 0, i + 1 + "");
@@ -221,17 +223,26 @@ public class Main {
 
 			int k = 1;
 			double[] leadCreated = { 0, 1, 0 };
+			double[] leadFromTable = { 0, 0, 0 };
+			double[] demandFromTable = { 0, 0, 0, 0, 0};
 			int numberOfTimesOrdered = 1;
 			for (int i = 0; i < numberOfCycles; i++) {
-
+				
+					int currentLead=Integer.parseInt(leadRandomTable.getCell(i, 2));
+					leadFromTable[currentLead-1]++;
+				
 				for (int j = 0; j < n; j++) {
 
 					record = new SimulationTableRecord();
 					if (i == 0 && j == 0) {
+						int currentDemand = Integer.parseInt(demandRandomTable.getCell(k, 2));
+						demandFromTable[currentDemand]++;
 						continue;
+						
 					}
 					record.setCycle(i + 1);
 					record.setDay(j + 1);
+				
 					////////////////////////////////
 					// This parts doesn't work well
 					// Beginning Inventory
@@ -254,7 +265,8 @@ public class Main {
 
 					int currentDemand = Integer.parseInt(demandRandomTable.getCell(k, 2));
 					record.setDemand(currentDemand);
-
+					demandFromTable[currentDemand]++;
+					
 					if ((record.getBeginningInventory() - currentDemand) < 0) {
 						record.setEndingInventory(0);
 						record.setShortageQuatity(Math.abs(record.getBeginningInventory() - currentDemand)
@@ -264,7 +276,7 @@ public class Main {
 						record.setShortageQuatity(0);
 					}
 
-					if (record.getCycle() > previousRecord.getCycle() && orderSize == 0
+					if (j==n-1 && orderSize == 0
 							&& record.getEndingInventory() <= minimumVehicle) {
 						orderSize = 12 - record.getEndingInventory();
 						daysToNextOrder = Integer.parseInt(leadRandomTable.getCell(i, 2));
@@ -272,6 +284,7 @@ public class Main {
 						record.setDaysToArrival(daysToNextOrder);
 						leadCreated[daysToNextOrder-1]++;
 						numberOfTimesOrdered++;
+						
 					}
 
 					////////////////////////////////
@@ -289,8 +302,8 @@ public class Main {
 			
 			storageSim.setTitles(headers3);
 			details.add(new JScrollPane(storageSim.table));
-			theoreticalAnswers.add(TheoreticalAnswer.getTheoreticalAnswer(demandRandomTable,
-					leadRandomTable,leadCreated,numberOfTimesOrdered));
+			theoreticalAnswers.add(TheoreticalAnswer.getTheoreticalAnswer(leadFromTable,demandFromTable
+					,leadCreated,numberOfTimesOrdered,n,numberOfCycles));
 			/*
 			 * JFrame resultsFrame = new JFrame("Results Table"); resultsFrame.setSize(900,
 			 * 500); resultsFrame.add(new JScrollPane(storageSim.table));
