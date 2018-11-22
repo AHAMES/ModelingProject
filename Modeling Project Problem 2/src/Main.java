@@ -51,9 +51,9 @@ public class Main {
 		ArrayList<StorageGraph[]> xStorageGraphs=new ArrayList<>();
 		ArrayList<JFreeChart> lineChartsPerRun=new ArrayList<>();
 		int minimumVehicle = 4;
-		int n = 3;
+		int n = 2;
 		int numberOfCycles = 50;
-		int numberOfRuns = 100;
+		int numberOfRuns = 30;
 		
 		for (int l = 0; l < numberOfRuns; l++) {
 			// Initializing given probability tables
@@ -306,7 +306,7 @@ public class Main {
 					demand+=currentDemand;
 					//If the current inventory does have enough cars
 					//set the inventory to 0 and record the shortage
-					if ((record.getBeginningInventory() - (currentDemand + previousRecord.getShortageQuatity())) < 0) {
+					if ((record.getBeginningInventory() - currentDemand) < 0) {
 						record.setEndingInventory(0);
 						record.setShortageQuatity(Math.abs(record.getBeginningInventory() - currentDemand)
 								+ previousRecord.getShortageQuatity());
@@ -315,7 +315,7 @@ public class Main {
 					//Otherwise decrease the current inventory and add it to the ending inventory
 					//and make shortage = 0
 					else {
-						record.setEndingInventory(record.getBeginningInventory() - currentDemand - previousRecord.getShortageQuatity());
+						record.setEndingInventory(record.getBeginningInventory() - currentDemand);
 						record.setShortageQuatity(0);
 					}
 
