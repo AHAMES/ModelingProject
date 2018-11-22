@@ -315,7 +315,8 @@ public class Main {
 					//Otherwise decrease the current inventory and add it to the ending inventory
 					//and make shortage = 0
 					else {
-						record.setEndingInventory(record.getBeginningInventory() - currentDemand - previousRecord.getShortageQuatity());
+						record.setEndingInventory(record.getBeginningInventory() - currentDemand 
+								- previousRecord.getShortageQuatity());
 						record.setShortageQuatity(0);
 					}
 
