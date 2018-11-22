@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
@@ -14,7 +14,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
-import org.jfree.data.general.PieDataset;
+
 
 
 public class Main {
@@ -333,6 +333,7 @@ public class Main {
 		averageInBank = averageInBank/(numberOfRuns);
 		averageDriveIn = averageDriveIn/(numberOfRuns);
 		DefaultPieDataset dataset2 = new DefaultPieDataset();
+		
 		dataset2.setValue("Number of People Going to Bank", averageInBank);
 		dataset2.setValue("Number of People Going to Drive In", averageDriveIn);
 		JFreeChart pieChart1 = ChartFactory.createPieChart("Average People In service",  

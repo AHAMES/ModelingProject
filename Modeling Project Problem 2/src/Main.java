@@ -7,6 +7,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
+
 public class Main {
 
 	public static void main(String[] args) {
@@ -30,17 +37,23 @@ public class Main {
 		//ArrayList that stores the practical probability distribution
 		//(Named theoretical for initial confusing reasons, the name stuck)
 		ArrayList<TheoreticalAnswer> theoreticalAnswers = new ArrayList<>();
-
-		int minimumVehicle = Integer.parseInt(JOptionPane.showInputDialog("Input Minimum Vehicles"));
+		
+		/*int minimumVehicle = Integer.parseInt(JOptionPane.showInputDialog("Input Minimum Vehicles"));
 		int n = Integer.parseInt(JOptionPane.showInputDialog("Input N"));
 		int numberOfCycles = Integer.parseInt(JOptionPane.showInputDialog("Input number of Cycles"));
 		int numberOfRuns = Integer.parseInt(JOptionPane.showInputDialog("Input Number of Runs"));
-		 
-		
-		/*int minimumVehicle = 4;
+		 */
+		//Values used in charts
+		int numberOfTimesUnderMinimum=0;
+		int overallNumberOfTimesOrdered=1;
+		int demand=0;
+		int shortage=0;
+		ArrayList<StorageGraph[]> xStorageGraphs=new ArrayList<>();
+		ArrayList<JFreeChart> lineChartsPerRun=new ArrayList<>();
+		int minimumVehicle = 4;
 		int n = 2;
 		int numberOfCycles = 50;
-		int numberOfRuns = 100;*/
+		int numberOfRuns = 30;
 		
 		for (int l = 0; l < numberOfRuns; l++) {
 			// Initializing given probability tables
@@ -221,7 +234,7 @@ public class Main {
 			SimulationTableRecord record = new SimulationTableRecord(1, 1, carsInStorage, firstDemand,
 					carsInStorage - firstDemand, 0, orderSize, daysToNextOrder);
 			record1.add(record);
-
+			demand+=firstDemand;
 			// This queue of orders keeps track of the orders sent for cars
 			// The assumption is that you cannot order cars before
 			// the current order arrives
@@ -232,6 +245,9 @@ public class Main {
 			double[] leadFromTable = { 0, 0, 0 };
 			double[] demandFromTable = { 0, 0, 0, 0, 0};
 			int numberOfTimesOrdered = 1;
+			StorageGraph [] graphUnit=new StorageGraph[numberOfCycles];
+			graphUnit[0]=new StorageGraph();
+			graphUnit[0].storage+=6;
 			for (int i = 0; i < numberOfCycles; i++) {
 				
 				//increase the number of lead From table at each cycle
@@ -239,9 +255,13 @@ public class Main {
 				//(assuming that we always order each cycle no matter what)
 					int currentLead=Integer.parseInt(leadRandomTable.getCell(i, 2));
 					leadFromTable[currentLead-1]++;
-				
+					if(graphUnit[i]==null)
+					{
+						graphUnit[i]=new StorageGraph();
+					}
+					graphUnit[i].cycle=i+1;
 				for (int j = 0; j < n; j++) {
-
+					
 					record = new SimulationTableRecord();
 					
 					//First record is added manually
@@ -283,13 +303,14 @@ public class Main {
 					
 					//add the demand each day
 					record.setDemand(currentDemand);
-				
+					demand+=currentDemand;
 					//If the current inventory does have enough cars
 					//set the inventory to 0 and record the shortage
 					if ((record.getBeginningInventory() - currentDemand) < 0) {
 						record.setEndingInventory(0);
 						record.setShortageQuatity(Math.abs(record.getBeginningInventory() - currentDemand)
 								+ previousRecord.getShortageQuatity());
+						shortage+=record.getShortageQuatity();
 					}
 					//Otherwise decrease the current inventory and add it to the ending inventory
 					//and make shortage = 0
@@ -298,6 +319,10 @@ public class Main {
 						record.setShortageQuatity(0);
 					}
 
+					if(record.getEndingInventory()<=minimumVehicle)
+					{
+						numberOfTimesUnderMinimum++;
+					}
 					//if at the end of the cycle (j==n-1)
 					//and no orders currently available (orderSize==0)
 					//and the ending inventory at this run is less then the minimum
@@ -315,9 +340,9 @@ public class Main {
 						//Increase the lead number at time a new order is made
 						leadCreated[daysToNextOrder-1]++;
 						numberOfTimesOrdered++;
-						
+						overallNumberOfTimesOrdered++;
 					}
-
+					graphUnit[i].storage=record.getEndingInventory();
 					////////////////////////////////
 					////////////////////////////////
 					//Add the record to the arrayList in the run
@@ -335,9 +360,11 @@ public class Main {
 			storageSim.setTitles(headers3);
 			//Store the record as a table in JScrollPane
 			details.add(new JScrollPane(storageSim.table));
+			lineChartsPerRun.add(StorageGraph.createGraph(graphUnit));
 			//Save practical distribution for this run
 			theoreticalAnswers.add(TheoreticalAnswer.getTheoreticalAnswer(leadFromTable,demandFromTable
 					,leadCreated,numberOfTimesOrdered,n,numberOfCycles));
+			xStorageGraphs.add(graphUnit);
 			/*
 			 * JFrame resultsFrame = new JFrame("Results Table"); resultsFrame.setSize(900,
 			 * 500); resultsFrame.add(new JScrollPane(storageSim.table));
@@ -353,17 +380,63 @@ public class Main {
 		//Tabbed Pane to contain the runs, answers, practical answers and final answers
 		JTabbedPane finalPanel = new JTabbedPane();
 		//Tabbed pane that contains the runs
-		JTabbedPane detailsPanel = new JTabbedPane();
-
 		
+		JTabbedPane detailsPanel = new JTabbedPane();
+		JTabbedPane detailsGraphPanel = new JTabbedPane();
+		
+		DefaultPieDataset dataset2 = new DefaultPieDataset();
+		int percentageOfTimesNotOrdering = (100*overallNumberOfTimesOrdered)/numberOfTimesUnderMinimum;
+		dataset2.setValue("Percentage of Times Ordering", percentageOfTimesNotOrdering);
+		dataset2.setValue("Percentage of Times Not Ordering", 100 - percentageOfTimesNotOrdering);
+		
+		DefaultCategoryDataset dataset1 = new DefaultCategoryDataset( );  
+		dataset1.addValue(numberOfTimesUnderMinimum/numberOfRuns, "Storage Minimum", "Ordering");
+		dataset1.addValue(overallNumberOfTimesOrdered/numberOfRuns, "Times Ordered", "Ordering");
+		dataset1.addValue((numberOfTimesUnderMinimum-overallNumberOfTimesOrdered)/numberOfRuns, "Times Not Ordered", "Ordering");
+		
+		DefaultCategoryDataset dataset3 = new DefaultCategoryDataset( );  
+		dataset3.addValue(demand/numberOfRuns, "Demand", "Demand");
+		dataset3.addValue(shortage/numberOfRuns, "Shortage", "Demand");
+		
+		
+		JFreeChart pieChart1 = ChartFactory.createPieChart("Percentage of Ordering",  
+		         dataset2,true,true, false);
+		JFreeChart barChart1=ChartFactory.createBarChart("Ordering Stats", "" ,"Occurences", dataset1, PlotOrientation.VERTICAL, true, true, false);
+		JFreeChart barChart2=ChartFactory.createBarChart("Ordering Stats", "" ,"Number Of Cars", dataset3, PlotOrientation.VERTICAL, true, true, false);
+		
+		DefaultCategoryDataset dataset4 = new DefaultCategoryDataset( );
+		StorageGraph[] finalStorageGraph=StorageGraph.getAverage(xStorageGraphs);
+		
+		for(int i=0;i<finalStorageGraph.length;i++)
+		{
+			dataset4.addValue(finalStorageGraph[i].storage, "Storage", finalStorageGraph[i].cycle+"");
+		}
+		
+		JFreeChart lineChart = ChartFactory.createLineChart(
+		         "Storage Usage",
+		         "Cycles","Cars in Storage",
+		         dataset4,
+		         PlotOrientation.VERTICAL,
+		         true,true,false);
 		//adding runs to the detail Tabbed Pane
+		
 		for (int i = 0; i < numberOfRuns; i++) {
 			detailsPanel.add("Run " + (i + 1), details.get(i));
+		}
+		for(int i=0;i<numberOfRuns;i++)
+		{
+			detailsGraphPanel.add("Run " + (i + 1), new ChartPanel(lineChartsPerRun.get(i)));
 		}
 		String answersHeaders[] = { "Run ID", "Showroom Avg", "Storage Avg", "Shortage Number" };
 
 		answerTable.setTitles(answersHeaders);
 		//JFrame that contains all the results
+		JTabbedPane charts=new JTabbedPane();
+		charts.add("Ordering Percentages", new ChartPanel(pieChart1));
+		charts.add("Ordering Stats",new ChartPanel(barChart1));
+		charts.add("Demand Stats",new ChartPanel(barChart2));
+		charts.add("Storage Status", new ChartPanel(lineChart));
+		charts.add("Storage Status Per Run", detailsGraphPanel);
 		JFrame finalFrame = new JFrame("Results");
 
 		String finalAnswersHeaders[] = { "Showroom Avg", "Storage Avg", "Shortage Number" };
@@ -377,6 +450,7 @@ public class Main {
 		finalPanel.addTab("Details", new JScrollPane(detailsPanel));
 		finalPanel.addTab("Final Answer", new JScrollPane(finalTable.table));
 		finalPanel.add("Real Probability Distribution", TheoreticalAnswer.getDistributions(theoreticalAnswers));
+		finalPanel.add("Charts", charts);
 		//Adding the tabbed pane to the Frame, showing all the results
 		finalFrame.add(finalPanel);
 		finalFrame.setSize(1000, 500);
