@@ -1,13 +1,13 @@
-import java.util.ArrayList;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.statistics.HistogramDataset;
+import org.jfree.data.statistics.HistogramType;
 
 
 public class CustomerGraph {
-	ArrayList<Range> ranges;
+	
+	/*ArrayList<Range> ranges;
 	ArrayList<Integer> counts;
 
 	public CustomerGraph(int wantedInterval, int lastArrivalTime) {
@@ -27,7 +27,7 @@ public class CustomerGraph {
 	public JFreeChart getGraph(ArrayList<SimulationTableRecord> record) {
 
 		DefaultCategoryDataset dataset1 = new DefaultCategoryDataset();
-
+		
 		for (int i = 0; i < record.size(); i++) {
 			int k = Range.getRange(ranges, record.get(i).getArrivalTime());
 			int m = counts.get(k);
@@ -50,10 +50,19 @@ public class CustomerGraph {
 		JFreeChart barChart = ChartFactory.createBarChart("Arrival Stats", "Time of Arrival", "Number Of People", dataset1,
 				PlotOrientation.VERTICAL, true, true, false);
 		return barChart;
-	}
+	}*/
 
+	public static JFreeChart getGraph(double [] dataset1) {
+		HistogramDataset dataset = new HistogramDataset();
+        dataset.setType(HistogramType.FREQUENCY);
+        
+		dataset.addSeries("Hist", dataset1, 20);
+		
+		JFreeChart barChart = ChartFactory.createHistogram("Arrival Stats", "Time of Arrival", "Number Of People", dataset, PlotOrientation.VERTICAL, true, true, false);
+		return barChart;
+	}
 	
-	public static CustomerGraph getAverage(ArrayList<CustomerGraph> customerGraphs,int highestRangeSize)
+	/*public static CustomerGraph getAverage(ArrayList<CustomerGraph> customerGraphs,int highestRangeSize)
 	{
 		CustomerGraph xCustomerGraph=new CustomerGraph(20, highestRangeSize);
 		
@@ -74,5 +83,5 @@ public class CustomerGraph {
 		}
 		
 		return xCustomerGraph;
-	}
+	}*/
 }

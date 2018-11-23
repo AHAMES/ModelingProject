@@ -101,5 +101,31 @@ public class TheoreticalAnswer {
 		xJTabbedPane.add("Interarrival Time Distribution", new JScrollPane(table2.table));
 		return xJTabbedPane;
 	}
+	
+	public static TheoreticalAnswer getDistributions(ArrayList<TheoreticalAnswer> answers,int m) {
+		TheoreticalAnswer x = new TheoreticalAnswer();
+		x.interArrivalDistribution = answers.get(0).interArrivalDistribution.clone();
+		x.serviceTimeDistribution = answers.get(0).serviceTimeDistribution.clone();
+		for (int k = 1; k < answers.size(); k++) {
+			for (int i = 0; i < 4; i++) {
+				x.serviceTimeDistribution[i] += answers.get(k).serviceTimeDistribution[i];
+			}
+			for (int i = 0; i < 6; i++) {
+
+				x.interArrivalDistribution[i] += answers.get(k).interArrivalDistribution[i];
+			}
+		}
+		DecimalFormat df = new DecimalFormat();
+		df.setMaximumFractionDigits(2);
+		for (int i = 0; i < 4; i++) {
+
+			x.serviceTimeDistribution[i]=x.serviceTimeDistribution[i] / answers.size();
+		}
+		for (int i = 0; i < 6; i++) {
+			x.interArrivalDistribution[i]=x.interArrivalDistribution[i] / answers.size();
+		}
+		
+		return x;
+	}
 
 }
