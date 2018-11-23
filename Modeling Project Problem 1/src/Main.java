@@ -15,8 +15,6 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 
-
-
 public class Main {
 
 	public static void main(String args[]) {
@@ -24,26 +22,28 @@ public class Main {
 		ArrayList<Answer> answers = new ArrayList<Answer>();
 		ArrayList<JTabbedPane> details = new ArrayList<>();
 		ArrayList<TheoreticalAnswer> theoreticalAnswers = new ArrayList<>();
-		
+
 		int numberOfRuns = Integer.parseInt(JOptionPane.showInputDialog("Input Number of Runs"));
 		int numberOfCustomers = Integer.parseInt(JOptionPane.showInputDialog("Number of Customers"));
-		
+
 		int queueLength = Integer.parseInt(JOptionPane.showInputDialog("Length of the Drive in Queue"));
-		
-		//Values used in charts
-		int averageInBank=0;
-		int averageDriveIn=0;
-		int waitingBank=0;
-		int waitingDrive=0;
-		int idleBankTime=0;
-		int idleDriveTime=0;
-		int BankTimeSpent=0;
-		int DriveTimeSpent=0;
-		int highestRangeSize=0;
-		
-		ArrayList<JFreeChart> barChartsPerRun=new ArrayList<>();
-		ArrayList<CustomerGraph> customerGraphs=new ArrayList<>();
-		
+
+		// Values used in charts
+		int averagPeopleGoingInBank = 0;
+		int averagePeopleGoingInDriveIn = 0;
+		int waitingTimeBank = 0;
+		int waitingTimeDrive = 0;
+		int idleBankTime = 0;
+		int idleDriveTime = 0;
+		int BankTimeSpent = 0;
+		int DriveTimeSpent = 0;
+		int highestRangeSize = 0;
+		int numberOfPeopleWaitingInBank = 0;
+		int numberOfPeopleWaitingDriveIn = 0;
+
+		ArrayList<JFreeChart> barChartsPerRun = new ArrayList<>();
+		ArrayList<CustomerGraph> customerGraphs = new ArrayList<>();
+
 		for (int l = 0; l < numberOfRuns; l++) {// If float problem happens
 
 			// Initializing given probability tables
@@ -98,11 +98,12 @@ public class Main {
 			// Populating the rest of the table in a loop
 			for (int i = 1; i < length1; i++) {
 				interArrivalRange[i] = new Range();
-				DecimalFormat df=new DecimalFormat();
+				DecimalFormat df = new DecimalFormat();
 				df.setMaximumFractionDigits(2);
-				interArrivalRange[i].first = Double.parseDouble(df.format((cumulativeInterArrivalProbability))) * 100 + 1;
+				interArrivalRange[i].first = Double.parseDouble(df.format((cumulativeInterArrivalProbability))) * 100
+						+ 1;
 				interArrivalRange[i].first /= 100;
-				cumulativeInterArrivalProbability = Double.parseDouble(df.format(cumulativeInterArrivalProbability)); 
+				cumulativeInterArrivalProbability = Double.parseDouble(df.format(cumulativeInterArrivalProbability));
 				cumulativeInterArrivalProbability += interArrivalTimeProbabilityList[i];
 				interArrivalRange[i].second = cumulativeInterArrivalProbability;
 				interArrivalTable.setValue(i, 0, i + "");
@@ -114,11 +115,11 @@ public class Main {
 
 			// Showing the result in a JFrame
 
-			
-			 /*JFrame interArrivalFrame = new JFrame(); interArrivalFrame.setSize(500, 500);
-			 interArrivalFrame.add(interArrivalTable.table);
-			 interArrivalFrame.setVisible(true);*/
-			 
+			/*
+			 * JFrame interArrivalFrame = new JFrame(); interArrivalFrame.setSize(500, 500);
+			 * interArrivalFrame.add(interArrivalTable.table);
+			 * interArrivalFrame.setVisible(true);
+			 */
 
 			//////////////////////////////////////////////////////
 
@@ -149,10 +150,11 @@ public class Main {
 
 			// Populating the rest of the table in a loop
 			for (int i = 1; i < length2; i++) {
-				DecimalFormat df=new DecimalFormat();
+				DecimalFormat df = new DecimalFormat();
 				df.setMaximumFractionDigits(2);
 				serviceTimeRange[i] = new Range();
-				serviceTimeRange[i].first =((Double.parseDouble(df.format(cumulativeServiceTimeProbability))) * 100) + 1;
+				serviceTimeRange[i].first = ((Double.parseDouble(df.format(cumulativeServiceTimeProbability))) * 100)
+						+ 1;
 				serviceTimeRange[i].first /= 100;
 				cumulativeServiceTimeProbability += Double.parseDouble(df.format(serviceTimeProbabilityList[i]));
 				cumulativeServiceTimeProbability = Double.parseDouble(df.format(cumulativeServiceTimeProbability));
@@ -164,17 +166,19 @@ public class Main {
 
 			}
 			// Showing the result in a JFrame
-			
-			  /*JFrame serviceTimeFrame = new JFrame(); serviceTimeFrame.setSize(500, 500);
-			  serviceTimeFrame.add(serviceTimeTable.table);
-			  serviceTimeFrame.setVisible(true);*/
-			 
+
+			/*
+			 * JFrame serviceTimeFrame = new JFrame(); serviceTimeFrame.setSize(500, 500);
+			 * serviceTimeFrame.add(serviceTimeTable.table);
+			 * serviceTimeFrame.setVisible(true);
+			 */
+
 			//////////////////////////////////////////////////////
 
 			//////////////////////////////////////////////////////
 			/// Random values in the table
 			//////////////////////////////////////////////////////
-		
+
 			Table interArrivalRandomTable = new Table(numberOfCustomers, 3);
 			Random random = new Random();
 			interArrivalRandomTable.setValue(0, 0, 1 + "");
@@ -223,7 +227,7 @@ public class Main {
 
 			LinkedList<Integer> carQueue = new LinkedList<Integer>();
 			carQueue.add(sr);
-			
+
 			int arrivalTime = 0;
 			for (int i = 1, j = 1, k = 1; k < numberOfCustomers; k++) {
 
@@ -250,15 +254,19 @@ public class Main {
 						record.setServerIdleTime(0);
 					}
 					record.setWaitingTimeInQueue(record.getTimeServiceBegins() - record.getArrivalTime());
+					if (record.getWaitingTimeInQueue() > 0) {
+						numberOfPeopleWaitingDriveIn++;
+
+					}
 					record.setTimeServiceEnds(record.getTimeServiceBegins() + record.getServiceTime());
 					record.setTimeSpentInSystem(record.getTimeServiceEnds() - record.getArrivalTime());
 
 					record.setWhichQueue("Drive");
 					record1.add(record);
 					carQueue.add(record.getTimeServiceEnds());
-					waitingDrive+=record1.get(i).getWaitingTimeInQueue();
-					idleDriveTime+=record1.get(i).getServerIdleTime();
-					DriveTimeSpent+=record1.get(i).getTimeSpentInSystem();
+					waitingTimeDrive += record1.get(i).getWaitingTimeInQueue();
+					idleDriveTime += record1.get(i).getServerIdleTime();
+					DriveTimeSpent += record1.get(i).getTimeSpentInSystem();
 					i++;
 				} else {
 					// Same code as the second else, i made it like that for the lack of proper goto
@@ -272,28 +280,30 @@ public class Main {
 						record.setServerIdleTime(0);
 					}
 					record.setWaitingTimeInQueue(record.getTimeServiceBegins() - record.getArrivalTime());
+					if (record.getWaitingTimeInQueue() > 0) {
+						numberOfPeopleWaitingInBank++;
+					}
 					record.setTimeServiceEnds(record.getTimeServiceBegins() + record.getServiceTime());
 					record.setTimeSpentInSystem(record.getTimeServiceEnds() - record.getArrivalTime());
 
 					record.setWhichQueue("Bank");
 					record2.add(record);
-					waitingBank+=record2.get(j).getWaitingTimeInQueue();
-					idleBankTime+=record2.get(j).getServerIdleTime();
-					BankTimeSpent+=record2.get(j).getTimeSpentInSystem();
+					waitingTimeBank += record2.get(j).getWaitingTimeInQueue();
+					idleBankTime += record2.get(j).getServerIdleTime();
+					BankTimeSpent += record2.get(j).getTimeSpentInSystem();
 					j++;
 				}
-			
+
 				recordTotal.add(record);
 			}
-			
-			CustomerGraph graphUnit=new CustomerGraph(20,recordTotal.get(recordTotal.size()-1).getArrivalTime());
+
+			CustomerGraph graphUnit = new CustomerGraph(20, recordTotal.get(recordTotal.size() - 1).getArrivalTime());
 			customerGraphs.add(graphUnit);
-			
-			if(highestRangeSize<graphUnit.ranges.get(graphUnit.ranges.size()-1).second)
-			{
-				highestRangeSize = (int) graphUnit.ranges.get(graphUnit.ranges.size()-1).second;
+
+			if (highestRangeSize < graphUnit.ranges.get(graphUnit.ranges.size() - 1).second) {
+				highestRangeSize = (int) graphUnit.ranges.get(graphUnit.ranges.size() - 1).second;
 			}
-			
+
 			barChartsPerRun.add(graphUnit.getGraph(recordTotal));
 			// Table for the drive in Teller
 			Table driveInSim = SimulationTableRecord.getTableRepresentation(record1.toArray().length, record1);
@@ -309,83 +319,95 @@ public class Main {
 			Table totalSim = SimulationTableRecord.getTableRepresentation(recordTotal.toArray().length, recordTotal);
 			totalSim.setTitles(headers3);
 
-			//Storing the answers of this run in a Answer object
-			Answer answer = SimulationTableRecord.getAnswers(record1, record2,recordTotal);
+			// Storing the answers of this run in a Answer object
+			Answer answer = SimulationTableRecord.getAnswers(record1, record2, recordTotal);
 			/*
 			 * String answersHeaders[] = { "Drive In Serv Avg", "Drive In Wait Avg",
 			 * "In Bank Serv Avg", "In Bank Wait Avg",
 			 * "Probability Bank Waiting","Probability Bank Idle", "Maximum Queue Length" };
 			 */
-			
-			//Storing the gained value for this run in details panel
+
+			// Storing the gained value for this run in details panel
 			JTabbedPane panel = new JTabbedPane();
-			
+
 			panel.addTab("Drive In", new JScrollPane(driveInSim.table));
 			panel.addTab("In Bank", new JScrollPane(inBankSim.table));
 			panel.addTab("Combined", new JScrollPane(totalSim.table));
 			details.add(panel);
 			theoreticalAnswers.add(TheoreticalAnswer.getTheoreticalAnswer(numberOfCustomers, interArrivalRandomTable,
-				serviceTimeRandomTable));
-			//Storing the Answer object of this run in an ArrayList
-			averageDriveIn+=record1.size();
-			averageInBank+=record2.size();
+					serviceTimeRandomTable));
+			// Storing the Answer object of this run in an ArrayList
+			averagePeopleGoingInDriveIn += record1.size();
+			averagPeopleGoingInBank += record2.size();
 			answers.add(answer);
 		}
-		
+
 		Table answerTable = Answer.getTableRepresentation(numberOfRuns, answers);
 		JTabbedPane finalPanel = new JTabbedPane();
-		
-		//Details tabbed panel
-		//Fill with the tabbed Panel
-		
-		DefaultCategoryDataset dataset1 = new DefaultCategoryDataset( );  
-		dataset1.addValue(waitingBank/numberOfRuns, "Bank", "Waiting Time");
-		dataset1.addValue(waitingDrive/numberOfRuns, "Drive", "Waiting Time");
-		dataset1.addValue(idleBankTime/numberOfRuns, "Bank", "Idle Time");
-		dataset1.addValue(idleDriveTime/numberOfRuns, "Drive", "Idle Time");
-		dataset1.addValue(BankTimeSpent/numberOfRuns, "Bank", "Time Spent");
-		dataset1.addValue(DriveTimeSpent/numberOfRuns, "Drive", "Time Spent");
-		
-		averageInBank = averageInBank/(numberOfRuns);
-		averageDriveIn = averageDriveIn/(numberOfRuns);
-		DefaultPieDataset dataset2 = new DefaultPieDataset();
-		
-		dataset2.setValue("Number of People Going to Bank", averageInBank);
-		dataset2.setValue("Number of People Going to Drive In", averageDriveIn);
-		JFreeChart pieChart1 = ChartFactory.createPieChart("Average People In service",  
-		         dataset2,true,true, false);
-		JFreeChart barChart=ChartFactory.createBarChart("Teller Stats","Category" ,"Time", dataset1, PlotOrientation.VERTICAL, true, true, false);
-		
-		JTabbedPane charts=new JTabbedPane();
+
+		// Details tabbed panel
+		// Fill with the tabbed Panel
+
+		DefaultCategoryDataset statsDataset = new DefaultCategoryDataset();
+		statsDataset.addValue(waitingTimeBank / numberOfRuns, "Bank", "Waiting Time");
+		statsDataset.addValue(waitingTimeDrive / numberOfRuns, "Drive", "Waiting Time");
+		statsDataset.addValue(idleBankTime / numberOfRuns, "Bank", "Idle Time");
+		statsDataset.addValue(idleDriveTime / numberOfRuns, "Drive", "Idle Time");
+		statsDataset.addValue(BankTimeSpent / numberOfRuns, "Bank", "Time Spent");
+		statsDataset.addValue(DriveTimeSpent / numberOfRuns, "Drive", "Time Spent");
+
+		averagPeopleGoingInBank = averagPeopleGoingInBank / (numberOfRuns);
+		averagePeopleGoingInDriveIn = averagePeopleGoingInDriveIn / (numberOfRuns);
+		DefaultPieDataset averagePeopleServedDataset = new DefaultPieDataset();
+		DefaultCategoryDataset peopleWaitingDataset = new DefaultCategoryDataset();
+
+		averagePeopleServedDataset.setValue("Number of People Going to Bank", averagPeopleGoingInBank);
+		averagePeopleServedDataset.setValue("Number of People Going to Drive In", averagePeopleGoingInDriveIn);
+
+		peopleWaitingDataset.setValue((numberOfPeopleWaitingInBank * 100) / (averagPeopleGoingInBank * numberOfRuns),
+				"% of people waiting In Bank", "Bank");
+		peopleWaitingDataset.setValue(
+				(numberOfPeopleWaitingDriveIn * 100) / (averagePeopleGoingInDriveIn * numberOfRuns),
+				"% of people waiting Drive In", "Drive");
+
+		JFreeChart averagePeopleServedChart = ChartFactory.createPieChart("Average People In service",
+				averagePeopleServedDataset, true, true, false);
+
+		JFreeChart peopleWaitingChart = ChartFactory.createBarChart("% People Waiting In Bank",
+				"Number Of People Waiting", "Percentage", peopleWaitingDataset, PlotOrientation.VERTICAL, true, true,
+				false);
+		JFreeChart statsChart = ChartFactory.createBarChart("Teller Stats", "Category", "Time", statsDataset,
+				PlotOrientation.VERTICAL, true, true, false);
+
+		JTabbedPane charts = new JTabbedPane();
 		JTabbedPane detailsPanel = new JTabbedPane();
 		JTabbedPane detailsGraphPanel = new JTabbedPane();
-		
+
 		for (int i = 0; i < numberOfRuns; i++) {
 			detailsPanel.add("Run " + (i + 1), details.get(i));
 		}
-		for(int i=0;i<numberOfRuns;i++)
-		{
+		for (int i = 0; i < numberOfRuns; i++) {
 			detailsGraphPanel.add("Run " + (i + 1), new ChartPanel(barChartsPerRun.get(i)));
 		}
-		
+
 		String answersHeaders[] = { "Run ID", "Drive In Serv Avg", "Drive In Wait Avg", "In Bank Serv Avg",
 				"In Bank Wait Avg", "Probability Bank Waiting", "Probability Bank Idle", "Maximum Queue Length" };
 		CustomerGraph averageCustomerGraph = CustomerGraph.getAverage(customerGraphs, highestRangeSize);
-		JFreeChart averageCustomerChart=CustomerGraph.getGraph(averageCustomerGraph);
+		JFreeChart averageCustomerChart = CustomerGraph.getGraph(averageCustomerGraph);
 		answerTable.setTitles(answersHeaders);
 		JFrame finalFrame = new JFrame("Results");
-		
+
 		String finalAnswersHeaders[] = { "Drive In Serv Avg", "Drive In Wait Avg", "In Bank Serv Avg",
 				"In Bank Wait Avg", "Probability Bank Waiting", "Probability Bank Idle", "Maximum Queue Length" };
-		
 
-		charts.add("Average of Users of System", new ChartPanel(pieChart1));
-		charts.add("Teller Stats",new ChartPanel(barChart));
-		charts.add("Storage Status Per Run", detailsGraphPanel);
-		charts.add("Average Arrival Time",new ChartPanel( averageCustomerChart));
+		charts.add("Average of Users of System", new ChartPanel(averagePeopleServedChart));
+		charts.add("Teller Stats", new ChartPanel(statsChart));
+		charts.add("Arrival Time Per Run", detailsGraphPanel);
+		charts.add("Total Arrival Time", new ChartPanel(averageCustomerChart));
+		charts.add("Percentage of People Waiting In Bank", new ChartPanel(peopleWaitingChart));
 		Table finalTable = Answer.getAverageOfAllRuns(numberOfRuns, answers);
 		finalTable.setTitles(finalAnswersHeaders);
-		
+
 		finalPanel.addTab("Run Results", new JScrollPane(answerTable.table));
 		finalPanel.addTab("Details", new JScrollPane(detailsPanel));
 		finalPanel.addTab("Final Answer", new JScrollPane(finalTable.table));
