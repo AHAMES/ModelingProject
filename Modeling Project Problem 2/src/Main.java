@@ -38,11 +38,11 @@ public class Main {
 		//(Named theoretical for initial confusing reasons, the name stuck)
 		ArrayList<TheoreticalAnswer> theoreticalAnswers = new ArrayList<>();
 		
-		/*int minimumVehicle = Integer.parseInt(JOptionPane.showInputDialog("Input Minimum Vehicles"));
+		int minimumVehicle = Integer.parseInt(JOptionPane.showInputDialog("Input Minimum Vehicles"));
 		int n = Integer.parseInt(JOptionPane.showInputDialog("Input N"));
 		int numberOfCycles = Integer.parseInt(JOptionPane.showInputDialog("Input number of Cycles"));
 		int numberOfRuns = Integer.parseInt(JOptionPane.showInputDialog("Input Number of Runs"));
-		 */
+		 
 		//Values used in charts
 		int numberOfTimesUnderMinimum=0;
 		int overallNumberOfTimesOrdered=1;
@@ -50,10 +50,11 @@ public class Main {
 		int shortage=0;
 		ArrayList<StorageGraph[]> xStorageGraphs=new ArrayList<>();
 		ArrayList<JFreeChart> lineChartsPerRun=new ArrayList<>();
+		/*
 		int minimumVehicle = 4;
 		int n = 3;
 		int numberOfCycles = 50;
-		int numberOfRuns = 100;
+		int numberOfRuns = 100;*/
 		
 		for (int l = 0; l < numberOfRuns; l++) {
 			// Initializing given probability tables

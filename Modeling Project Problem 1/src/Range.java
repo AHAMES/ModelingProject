@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Range {
 	
 	//A class that contains the ranges
@@ -25,6 +27,16 @@ public class Range {
 	static int getRangeProbability(Range[] ranges, double currentRange) {
 		for (int i = 0, l = ranges.length; i < l; i++) {
 			if(currentRange>=ranges[i].first && currentRange<=ranges[i].second)
+			{
+				return i;
+			}
+		}
+		return 0;
+	}
+	
+	static int getRange(ArrayList<Range> ranges, double currentRange) {
+		for (int i = 0, l = ranges.size(); i < l; i++) {
+			if(currentRange>=ranges.get(i).first && currentRange<=ranges.get(i).second)
 			{
 				return i;
 			}

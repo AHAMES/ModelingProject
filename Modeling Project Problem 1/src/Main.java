@@ -39,6 +39,11 @@ public class Main {
 		int idleDriveTime=0;
 		int BankTimeSpent=0;
 		int DriveTimeSpent=0;
+		int highestRangeSize=0;
+		
+		ArrayList<JFreeChart> barChartsPerRun=new ArrayList<>();
+		ArrayList<CustomerGraph> customerGraphs=new ArrayList<>();
+		
 		for (int l = 0; l < numberOfRuns; l++) {// If float problem happens
 
 			// Initializing given probability tables
@@ -218,6 +223,7 @@ public class Main {
 
 			LinkedList<Integer> carQueue = new LinkedList<Integer>();
 			carQueue.add(sr);
+			
 			int arrivalTime = 0;
 			for (int i = 1, j = 1, k = 1; k < numberOfCustomers; k++) {
 
@@ -276,9 +282,19 @@ public class Main {
 					BankTimeSpent+=record2.get(j).getTimeSpentInSystem();
 					j++;
 				}
-				
+			
 				recordTotal.add(record);
 			}
+			
+			CustomerGraph graphUnit=new CustomerGraph(20,recordTotal.get(recordTotal.size()-1).getArrivalTime());
+			customerGraphs.add(graphUnit);
+			
+			if(highestRangeSize<graphUnit.ranges.get(graphUnit.ranges.size()-1).second)
+			{
+				highestRangeSize = (int) graphUnit.ranges.get(graphUnit.ranges.size()-1).second;
+			}
+			
+			barChartsPerRun.add(graphUnit.getGraph(recordTotal));
 			// Table for the drive in Teller
 			Table driveInSim = SimulationTableRecord.getTableRepresentation(record1.toArray().length, record1);
 			String headers3[] = { "Queue", "Customer", "Inter-Arrival Time", "Arrival Time", "Service Time",
@@ -342,13 +358,20 @@ public class Main {
 		
 		JTabbedPane charts=new JTabbedPane();
 		JTabbedPane detailsPanel = new JTabbedPane();
+		JTabbedPane detailsGraphPanel = new JTabbedPane();
+		
 		for (int i = 0; i < numberOfRuns; i++) {
 			detailsPanel.add("Run " + (i + 1), details.get(i));
+		}
+		for(int i=0;i<numberOfRuns;i++)
+		{
+			detailsGraphPanel.add("Run " + (i + 1), new ChartPanel(barChartsPerRun.get(i)));
 		}
 		
 		String answersHeaders[] = { "Run ID", "Drive In Serv Avg", "Drive In Wait Avg", "In Bank Serv Avg",
 				"In Bank Wait Avg", "Probability Bank Waiting", "Probability Bank Idle", "Maximum Queue Length" };
-		
+		CustomerGraph averageCustomerGraph = CustomerGraph.getAverage(customerGraphs, highestRangeSize);
+		JFreeChart averageCustomerChart=CustomerGraph.getGraph(averageCustomerGraph);
 		answerTable.setTitles(answersHeaders);
 		JFrame finalFrame = new JFrame("Results");
 		
@@ -358,6 +381,8 @@ public class Main {
 
 		charts.add("Average of Users of System", new ChartPanel(pieChart1));
 		charts.add("Teller Stats",new ChartPanel(barChart));
+		charts.add("Storage Status Per Run", detailsGraphPanel);
+		charts.add("Average Arrival Time",new ChartPanel( averageCustomerChart));
 		Table finalTable = Answer.getAverageOfAllRuns(numberOfRuns, answers);
 		finalTable.setTitles(finalAnswersHeaders);
 		
