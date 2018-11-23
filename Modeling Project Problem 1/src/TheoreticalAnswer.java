@@ -21,6 +21,25 @@ public class TheoreticalAnswer {
 	//Returns the practical answer of this problem
 	//The method used here is different from problem 2 after reconsideration
 	//As this was the original implementation for both
+	public static TheoreticalAnswer getTheoreticalTotal(int numberOfCustomers, Table interArrivalRandomTable,
+			Table serviceTimeRandomTable) {
+		TheoreticalAnswer TA = new TheoreticalAnswer();
+		for (int k = 0; k < numberOfCustomers; k++) {
+			if (interArrivalRandomTable.getCell(k, 1) == "-") {
+				TA.interArrivalDistribution[0]++;
+			}
+			else
+			{
+				int IA = Integer.parseInt(interArrivalRandomTable.getCell(k, 2));
+				TA.interArrivalDistribution[IA]++;
+			}
+
+			int ST = Integer.parseInt(serviceTimeRandomTable.getCell(k, 2));
+			TA.serviceTimeDistribution[ST - 1]++;
+		}
+		return TA;
+	}
+	
 	public static TheoreticalAnswer getTheoreticalAnswer(int numberOfCustomers, Table interArrivalRandomTable,
 			Table serviceTimeRandomTable) {
 		TheoreticalAnswer TA = new TheoreticalAnswer();

@@ -40,7 +40,8 @@ public class Main {
 		int highestRangeSize = 0;
 		int numberOfPeopleWaitingInBank = 0;
 		int numberOfPeopleWaitingDriveIn = 0;
-
+		int interArrivalDistributionTotal[]=new int[6];
+		int serviceTimeDistributionTotal[]=new int[4];
 		ArrayList<JFreeChart> barChartsPerRun = new ArrayList<>();
 		ArrayList<CustomerGraph> customerGraphs = new ArrayList<>();
 
@@ -336,6 +337,15 @@ public class Main {
 			details.add(panel);
 			theoreticalAnswers.add(TheoreticalAnswer.getTheoreticalAnswer(numberOfCustomers, interArrivalRandomTable,
 					serviceTimeRandomTable));
+			TheoreticalAnswer xTheoreticalAnswer=TheoreticalAnswer.getTheoreticalTotal(numberOfCustomers, interArrivalRandomTable, serviceTimeRandomTable);
+			for(int i =0; i<6;i++)
+			{
+				interArrivalDistributionTotal[i]=(int) xTheoreticalAnswer.interArrivalDistribution[i];
+			}
+			for(int i =0; i<4;i++)
+			{
+				serviceTimeDistributionTotal[i]=(int) xTheoreticalAnswer.serviceTimeDistribution[i];
+			}
 			// Storing the Answer object of this run in an ArrayList
 			averagePeopleGoingInDriveIn += record1.size();
 			averagPeopleGoingInBank += record2.size();
@@ -348,6 +358,15 @@ public class Main {
 		// Details tabbed panel
 		// Fill with the tabbed Panel
 
+		DefaultCategoryDataset distributionDataset=new DefaultCategoryDataset();
+		for(int i=0;i<6;i++)
+		{
+			distributionDataset.addValue(interArrivalDistributionTotal[i], "Inter-Arrival", i+"");
+		}
+		for(int i=0;i<4;i++)
+		{
+			distributionDataset.addValue(serviceTimeDistributionTotal[i], "Service Time", i+1+"");
+		}
 		DefaultCategoryDataset statsDataset = new DefaultCategoryDataset();
 		statsDataset.addValue(waitingTimeBank / numberOfRuns, "Bank", "Waiting Time");
 		statsDataset.addValue(waitingTimeDrive / numberOfRuns, "Drive", "Waiting Time");
@@ -373,6 +392,8 @@ public class Main {
 		JFreeChart averagePeopleServedChart = ChartFactory.createPieChart("Average People In service",
 				averagePeopleServedDataset, true, true, false);
 
+		JFreeChart distributionChart = ChartFactory.createBarChart("Theoretical Distributions",
+				"Distribution", "Occurances", distributionDataset, PlotOrientation.VERTICAL, true, true, false);
 		JFreeChart peopleWaitingChart = ChartFactory.createBarChart("% People Waiting In Bank",
 				"Number Of People Waiting", "Percentage", peopleWaitingDataset, PlotOrientation.VERTICAL, true, true,
 				false);
@@ -405,6 +426,7 @@ public class Main {
 		charts.add("Arrival Time Per Run", detailsGraphPanel);
 		charts.add("Total Arrival Time", new ChartPanel(averageCustomerChart));
 		charts.add("Percentage of People Waiting In Bank", new ChartPanel(peopleWaitingChart));
+		charts.add("Distribution Charts", new ChartPanel(distributionChart));
 		Table finalTable = Answer.getAverageOfAllRuns(numberOfRuns, answers);
 		finalTable.setTitles(finalAnswersHeaders);
 
