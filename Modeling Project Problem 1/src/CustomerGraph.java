@@ -52,13 +52,12 @@ public class CustomerGraph {
 		return barChart;
 	}*/
 
-	public static JFreeChart getGraph(double [] dataset1) {
+	public static JFreeChart getGraph(double [] dataset1,int numberOfBins,String title, String column) {
 		HistogramDataset dataset = new HistogramDataset();
         dataset.setType(HistogramType.FREQUENCY);
         
-		dataset.addSeries("Hist", dataset1, 20);
-		
-		JFreeChart barChart = ChartFactory.createHistogram("Arrival Stats", "Time of Arrival", "Number Of People", dataset, PlotOrientation.VERTICAL, true, true, false);
+		dataset.addSeries("Number of People", dataset1,numberOfBins);
+		JFreeChart barChart = ChartFactory.createHistogram(title, column, "Number Of People", dataset, PlotOrientation.VERTICAL, true, true, false);
 		return barChart;
 	}
 	

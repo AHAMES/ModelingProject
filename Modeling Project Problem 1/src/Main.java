@@ -40,7 +40,7 @@ public class Main {
 		int numberOfPeopleWaitingInBank = 0;
 		int numberOfPeopleWaitingDriveIn = 0;
 		ArrayList<JFreeChart> barChartsPerRun = new ArrayList<>();
-
+		ArrayList<JFreeChart> waitingChartPerRun=new ArrayList<>();
 		
 		
 		// Initializing given probability tables
@@ -177,6 +177,7 @@ public class Main {
 			/// Random values in the table
 			//////////////////////////////////////////////////////
 			double [] arrivalTimes=new double[numberOfCustomers];
+			double [] waitingTimes=new double[numberOfCustomers];
 			Table interArrivalRandomTable = new Table(numberOfCustomers, 3);
 			Random random = new Random();
 			interArrivalRandomTable.setValue(0, 0, 1 + "");
@@ -294,11 +295,13 @@ public class Main {
 
 				recordTotal.add(record);
 				arrivalTimes[k]=record.getArrivalTime();
+				waitingTimes[k]=record.getWaitingTimeInQueue();
 			}
 
 		
 
-			barChartsPerRun.add(CustomerGraph.getGraph(arrivalTimes));
+			barChartsPerRun.add(CustomerGraph.getGraph(arrivalTimes,20,"Arrival Stats","Time of arrival"));
+			waitingChartPerRun.add(CustomerGraph.getGraph(waitingTimes,5,"Waiting Stats","Waiting Time"));
 			// Table for the drive in Teller
 			Table driveInSim = SimulationTableRecord.getTableRepresentation(record1.toArray().length, record1);
 			String headers3[] = { "Queue", "Customer", "Inter-Arrival Time", "Arrival Time", "Service Time",
@@ -378,10 +381,10 @@ public class Main {
 		averagePeopleServedDataset.setValue("Number of People Going to Drive In", averagePeopleGoingInDriveIn);
 
 		peopleWaitingDataset.setValue((numberOfPeopleWaitingInBank * 100) / (averagPeopleGoingInBank * numberOfRuns),
-				"% of people waiting In Bank", "Bank");
+				"Bank", "% of people waiting");
 		peopleWaitingDataset.setValue(
 				(numberOfPeopleWaitingDriveIn * 100) / (averagePeopleGoingInDriveIn * numberOfRuns),
-				"% of people waiting Drive In", "Drive");
+				"Drive","% of people waiting");
 
 		JFreeChart averagePeopleServedChart = ChartFactory.createPieChart("Average People In service",
 				averagePeopleServedDataset, true, true, false);
@@ -397,13 +400,13 @@ public class Main {
 		JTabbedPane charts = new JTabbedPane();
 		JTabbedPane detailsPanel = new JTabbedPane();
 		JTabbedPane detailsGraphPanel = new JTabbedPane();
-
+		JTabbedPane detailedWaitingGraphPanel =new JTabbedPane();
 		for (int i = 0; i < numberOfRuns; i++) {
 			detailsPanel.add("Run " + (i + 1), details.get(i));
-		}
-		for (int i = 0; i < numberOfRuns; i++) {
 			detailsGraphPanel.add("Run " + (i + 1), new ChartPanel(barChartsPerRun.get(i)));
+			detailedWaitingGraphPanel.add("Run" + (i+1), new ChartPanel(waitingChartPerRun.get(i)));
 		}
+		
 
 		String answersHeaders[] = { "Run ID", "Drive In Serv Avg", "Drive In Wait Avg", "In Bank Serv Avg",
 				"In Bank Wait Avg", "Probability Bank Waiting", "Probability Bank Idle", "Maximum Queue Length" };
@@ -418,6 +421,7 @@ public class Main {
 		charts.add("Average of Users of System", new ChartPanel(averagePeopleServedChart));
 		charts.add("Teller Stats", new ChartPanel(statsChart));
 		charts.add("Arrival Time Per Run", detailsGraphPanel);
+		charts.add("Waiting Time Per Run", detailedWaitingGraphPanel);
 		charts.add("Percentage of People Waiting In Bank", new ChartPanel(peopleWaitingChart));
 		charts.add("Distribution Charts", new ChartPanel(distributionChart));
 		
