@@ -300,15 +300,26 @@ public class Main {
 					demand += currentDemand;
 					// If the current inventory does have enough cars
 					// set the inventory to 0 and record the shortage
+					//This commented portions of the code in these conditions
+					//are used as an alternative assumption if shortage is added to the demand
+					//and taken later from inventory
 					if ((record.getBeginningInventory() - (currentDemand + previousRecord.getShortageQuatity())) < 0) {
+						
 						record.setEndingInventory(0);
-						record.setShortageQuatity(Math.abs(record.getBeginningInventory() - currentDemand)
-								+ previousRecord.getShortageQuatity());
+						//record.setShortageQuatity(Math.abs(record.getBeginningInventory() - currentDemand));
+						
+						
+						record.setShortageQuatity(Math.abs(record.getBeginningInventory() - (currentDemand
+								+ previousRecord.getShortageQuatity())));
+						
 						shortage += record.getShortageQuatity();
 					}
 					// Otherwise decrease the current inventory and add it to the ending inventory
 					// and make shortage = 0
 					else {
+						/*record.setEndingInventory(
+								record.getBeginningInventory() - currentDemand);*/
+					
 						record.setEndingInventory(
 								record.getBeginningInventory() - currentDemand - previousRecord.getShortageQuatity());
 						record.setShortageQuatity(0);
