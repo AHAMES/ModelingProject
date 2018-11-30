@@ -5,6 +5,7 @@ import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.HistogramType;
 
 
+
 public class CustomerGraph {
 	
 	/*ArrayList<Range> ranges;
@@ -60,6 +61,7 @@ public class CustomerGraph {
 		JFreeChart barChart = ChartFactory.createHistogram(title, column, "Number Of People", dataset, PlotOrientation.VERTICAL, true, true, false);
 		return barChart;
 	}
+	
 	
 	/*public static CustomerGraph getAverage(ArrayList<CustomerGraph> customerGraphs,int highestRangeSize)
 	{

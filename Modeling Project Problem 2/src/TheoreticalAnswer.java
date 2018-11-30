@@ -94,5 +94,34 @@ public class TheoreticalAnswer {
 		xJTabbedPane.add("Demand Time Distribution", new JScrollPane(table2.table));
 		return xJTabbedPane;
 	}
+	
+	public static TheoreticalAnswer getDistributions(ArrayList<TheoreticalAnswer> answers,int m) {
+		TheoreticalAnswer x = new TheoreticalAnswer();
+		x.demandDistribution = answers.get(0).demandDistribution.clone();
+		x.leadDistribution = answers.get(0).leadDistribution.clone();
+		x.realLeadDistribution = answers.get(0).realLeadDistribution.clone();
+		for (int k = 1; k < answers.size(); k++) {
+			for (int i = 0; i < 5; i++) {
+				x.demandDistribution[i] += answers.get(k).demandDistribution[i];
+			}
+			for (int i = 0; i < 3; i++) {
+
+				x.realLeadDistribution[i] += answers.get(k).realLeadDistribution[i];
+				x.leadDistribution[i] += answers.get(k).leadDistribution[i];
+			}
+		}
+		DecimalFormat df = new DecimalFormat();
+		df.setMaximumFractionDigits(2);
+		for (int i = 0; i < 5; i++) {
+
+			x.demandDistribution[i]=x.demandDistribution[i] / answers.size();
+		}
+		for (int i = 0; i < 3; i++) {
+			x.leadDistribution[i]=x.leadDistribution[i] / answers.size();
+			x.realLeadDistribution[i]=x.realLeadDistribution[i] / answers.size();
+		}
+		
+		return x;
+	}
 
 }
